@@ -25,6 +25,8 @@ export const completeOnboarding = mutation({
 			alreadyOnboarded: true,
 			profileImage: identity.pictureUrl || "",
 			userId: identity.subject,
+			exp: identity.exp ? Number(identity.exp) : 0,
+			education_level: "sd", // Default value, can be changed later
 		});
 
 		if (!user) {

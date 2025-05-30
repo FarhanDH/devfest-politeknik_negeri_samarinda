@@ -88,6 +88,8 @@ export const createOrUpdateUser = async (
 		username: args.username as string,
 		profileImage: args.profileImage || "",
 		alreadyOnboarded: args.alreadyOnboarded as boolean,
+		exp: args.exp as number,
+		education_level: args.education_level as "sd" | "smp" | "sma" | "kuliah",
 	});
 
 	return await ctx.db.get(userId);
