@@ -89,3 +89,15 @@ export const updateQuizTask = internalMutation({
 		});
 	},
 });
+
+export const updateQuizAttemptFeedback = internalMutation({
+	args: {
+		attemptId: vv.id("quiz_attempts"),
+		feedback: v.string(),
+	},
+	handler: async (ctx, args) => {
+		await ctx.db.patch(args.attemptId, {
+			feedback: args.feedback,
+		});
+	},
+});

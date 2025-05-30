@@ -14,6 +14,7 @@ import type * as constants from "../constants.js";
 import type * as http from "../http.js";
 import type * as internal_quizzes from "../internal_quizzes.js";
 import type * as lib from "../lib.js";
+import type * as multiplayer from "../multiplayer.js";
 import type * as quizzes from "../quizzes.js";
 import type * as users from "../users.js";
 import type * as utils from "../utils.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   internal_quizzes: typeof internal_quizzes;
   lib: typeof lib;
+  multiplayer: typeof multiplayer;
   quizzes: typeof quizzes;
   users: typeof users;
   utils: typeof utils;

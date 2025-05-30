@@ -1,3 +1,4 @@
+import { Progress } from "@/components/retroui/Progress";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -7,20 +8,21 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import type { Id } from "@cvx/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useAction } from "convex/react";
 import { ArrowLeft, Award, Check, Clock, X } from "lucide-react";
 import { useEffect, useState } from "react";
-// import type { Doc } from '@cvx/_generated/dataModel'
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface QuizResultProps {
 	quizId: Id<"quizzes">;
 	attemptId: string;
-};
+}
 
 export const Route = createFileRoute(
 	"/_app/_authenticated/quizzes/$quizId/result",
@@ -40,6 +42,8 @@ function formatTime(ms: number): string {
 
 function QuizResult({ quizId, attemptId }: QuizResultProps) {
 	const [totalTimeTaken, setTotalTimeTaken] = useState<number>(0);
+	const [isGeneratingFeedback, setIsGeneratingFeedback] =
+		useState<boolean>(false);
 
 	// Fetch quiz data
 	const { data: quiz, isLoading: isQuizLoading } = useQuery(
@@ -48,23 +52,44 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 
 	// Fetch attempt data
 	const { data: attempt, isLoading: isAttemptLoading } = useQuery(
-		convexQuery(api.quizzes.getQuizAttempt, { attemptId: attemptId as Id<"quiz_attempts"> })
+		convexQuery(api.quizzes.getQuizAttempt, {
+			attemptId: attemptId as Id<"quiz_attempts">,
+		}),
 	);
-	
+
+	const generateFeedback = useAction(api.ai.generateFeedbackFromQuizResult);
+
 	// Log the attempt data for debugging
 	useEffect(() => {
-		console.log("Attempt data in result page:", { attemptId, attempt, isAttemptLoading });
+		console.log("Attempt data in result page:", {
+			attemptId,
+			attempt,
+			isAttemptLoading,
+		});
 	}, [attemptId, attempt, isAttemptLoading]);
 
 	// Calculate total time taken
 	useEffect(() => {
 		if (attempt?.questionAnswers) {
-			const totalTime = attempt.questionAnswers.reduce((acc: number, answer: { timeTaken: number }) => {
-				return acc + answer.timeTaken;
-			}, 0);
+			const totalTime = attempt.questionAnswers.reduce(
+				(acc: number, answer: { timeTaken: number }) => {
+					return acc + answer.timeTaken;
+				},
+				0,
+			);
 			setTotalTimeTaken(totalTime);
+
+			generateFeedback({ attemptId: attempt._id });
 		}
 	}, [attempt]);
+
+	useEffect(() => {
+		if (attempt && !attempt.feedback) {
+			setIsGeneratingFeedback(true);
+			generateFeedback({ attemptId: attempt._id });
+			setIsGeneratingFeedback(false);
+		}
+	}, [attempt, attempt?.feedback]);
 
 	const navigate = useNavigate();
 
@@ -77,6 +102,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					</CardHeader>
 					<CardContent>
 						<p>Please wait while we load your quiz results.</p>
+						{isGeneratingFeedback && <p>Generating feedback...</p>}
 					</CardContent>
 				</Card>
 			</div>
@@ -103,7 +129,8 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					<CardContent>
 						<p>We couldn't find the results for this quiz attempt.</p>
 						<p className="text-sm text-gray-500 mt-2">
-							Debug info: Quiz ID: {quizId.toString()}, Attempt ID: {attemptId.toString()}
+							Debug info: Quiz ID: {quizId.toString()}, Attempt ID:{" "}
+							{attemptId.toString()}
 						</p>
 						<Button
 							className="mt-4"
@@ -117,7 +144,9 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 		);
 	}
 
-	const correctAnswers = attempt.questionAnswers.filter((a) => a.isCorrect).length;
+	const correctAnswers = attempt.questionAnswers.filter(
+		(a) => a.isCorrect,
+	).length;
 	const totalQuestions = quiz.questions.length;
 	const percentage = Math.round((correctAnswers / totalQuestions) * 100);
 
@@ -198,6 +227,32 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					</Button>
 				</CardFooter>
 			</Card>
+
+			{!attempt.feedback && (
+				<Card className="mb-8 border-2 border-yellow-400 shadow-[4px_4px_0px_#000] bg-[var(--retro-background-alt)] text-[var(--retro-text-color)]">
+					<CardHeader>
+						<CardTitle className="text-xl text-[var(--retro-text-color)]">
+							✨ Evaluasi dari AI ✨
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p>Sedang mengevaluasi hasil pekerjaanmu...</p>
+					</CardContent>
+				</Card>
+			)}
+
+			{attempt?.feedback && (
+				<Card className="mb-8 border-2 border-yellow-400 shadow-[4px_4px_0px_#000] bg-[var(--retro-background-alt)] text-[var(--retro-text-color)]">
+					<CardHeader>
+						<CardTitle className="text-xl text-[var(--retro-text-color)]">
+							✨ Evaluasi dari AI ✨
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Markdown remarkPlugins={[remarkGfm]}>{attempt.feedback}</Markdown>
+					</CardContent>
+				</Card>
+			)}
 
 			{/* Question Review */}
 			<h2 className="text-2xl font-bold mb-4">Question Review</h2>
@@ -296,7 +351,8 @@ function RouteComponent() {
 					<CardContent>
 						<p>No quiz attempt was specified. Please try again.</p>
 						<p className="text-sm text-gray-500 mt-2">
-							Debug info: Quiz ID: {quizId}, Search params: {JSON.stringify(searchParams)}
+							Debug info: Quiz ID: {quizId}, Search params:{" "}
+							{JSON.stringify(searchParams)}
 						</p>
 						<Button className="mt-4" onClick={() => window.history.back()}>
 							Go Back
@@ -308,5 +364,10 @@ function RouteComponent() {
 	}
 
 	// Ensure attemptId is properly cast as an Id<"quiz_attempts">
-	return <QuizResult quizId={quizId as Id<"quizzes">} attemptId={attemptId as Id<"quiz_attempts">} />;
+	return (
+		<QuizResult
+			quizId={quizId as Id<"quizzes">}
+			attemptId={attemptId as Id<"quiz_attempts">}
+		/>
+	);
 }

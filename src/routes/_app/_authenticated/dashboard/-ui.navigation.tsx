@@ -1,6 +1,7 @@
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Menu, Settings } from "lucide-react";
 
 import { Button } from "@/components/retroui/Button";
+import { Text } from "@/components/retroui/Text";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -9,7 +10,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Logo } from "@/components/ui/logo";
-import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/clerk-react";
 import type { Doc } from "@cvx/_generated/dataModel";
@@ -20,6 +20,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 	const navigate = useNavigate();
 	const isDashboardPath = matchRoute({ to: "/dashboard" });
 	const isSettingsPath = matchRoute({ to: "/dashboard/settings" });
+	const isLeaderboardPath = matchRoute({ to: "/dashboard/leaderboard" });
 
 	if (!user) {
 		return null;
@@ -33,15 +34,26 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 						<Logo />
 					</Link>
 
-					<div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
+					<div className="hidden md:flex items-center gap-3 ml-4">
 						<Link to={"/dashboard"}>
 							<Button
 								variant={"link"}
 								className={cn(" text-sm text-foreground", {
-									"text-primary underline": isDashboardPath,
+									underline: isDashboardPath,
 								})}
 							>
-								Dashboard
+								<Text as={"p"}>Dashboard</Text>
+							</Button>
+						</Link>
+
+						<Link to={"/dashboard/leaderboard"}>
+							<Button
+								variant={"link"}
+								className={cn(" text-sm text-foreground", {
+									underline: isLeaderboardPath,
+								})}
+							>
+								<Text as={"p"}>Leaderboard</Text>
 							</Button>
 						</Link>
 
@@ -49,16 +61,77 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 							<Button
 								variant={"link"}
 								className={cn(" text-sm text-foreground", {
-									"text-primary underline": isSettingsPath,
+									underline: isSettingsPath,
 								})}
 							>
-								Settings
+								<Text as={"p"}>Settings</Text>
 							</Button>
 						</Link>
 					</div>
 				</div>
 
 				<div className="flex h-10 items-center gap-3">
+					{/* Mobile Menu Button */}
+					<div className="md:hidden">
+						<DropdownMenu modal={false}>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="link"
+									size="icon"
+									className="text-foreground hover:bg-accent/20 p-2 rounded-md"
+								>
+									<Menu className="h-6 w-6" />
+									<span className="sr-only">Open menu</span>
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								sideOffset={8}
+								align="end"
+								className="bg-card border-border shadow-md w-48"
+							>
+								<DropdownMenuItem asChild>
+									<Link
+										to="/dashboard"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isDashboardPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
+										Dashboard
+									</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem asChild>
+									<Link
+										to="/dashboard/leaderboard"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isLeaderboardPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
+										Leaderboard
+									</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem asChild>
+									<Link
+										to="/dashboard/settings"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isSettingsPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
+										Settings
+									</Link>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
+
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button
@@ -98,11 +171,6 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground" />
 							</DropdownMenuItem>
 
-							<DropdownMenuItem className="flex h-9 items-center justify-between rounded-md px-2">
-								<span className="text-sm text-foreground">Theme</span>
-								<ThemeSwitcher />
-							</DropdownMenuItem>
-
 							<DropdownMenuSeparator className="mx-0 my-2 h-[1px] bg-border" />
 
 							<SignOutButton redirectUrl="/">
@@ -115,43 +183,6 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 					</DropdownMenu>
 				</div>
 			</div>
-
-			{/* <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
-				<div
-					className={cn(
-						"flex h-12 items-center border-b-2",
-						isDashboardPath ? "border-primary" : "border-transparent",
-					)}
-				>
-					<Link to={"/dashboard"}>
-						<Button
-							variant={"link"}
-							className={cn("hover:no-underline text-foreground", {
-								"text-primary": isDashboardPath,
-							})}
-						>
-							Dashboard
-						</Button>
-					</Link>
-				</div>
-				<div
-					className={cn(
-						"flex h-12 items-center border-b-2",
-						isSettingsPath ? "border-primary" : "border-transparent",
-					)}
-				>
-					<Link to={"/dashboard/settings"}>
-						<Button
-							variant={"link"}
-							className={cn("hover:no-underline text-foreground", {
-								"text-primary": isSettingsPath,
-							})}
-						>
-							Settings
-						</Button>
-					</Link>
-				</div>
-			</div> */}
 		</nav>
 	);
 }

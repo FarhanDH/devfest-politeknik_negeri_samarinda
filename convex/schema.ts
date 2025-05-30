@@ -77,6 +77,7 @@ const schema = defineSchema({
 		startedAt: v.float64(),
 		totalScore: v.float64(),
 		userId: v.id("users"),
+		feedback: v.optional(v.string()),
 	})
 		.index("by_quiz", ["quizId"])
 		.index("by_user", ["userId"])
@@ -92,14 +93,14 @@ const schema = defineSchema({
 			v.literal("questions_generated"),
 			v.literal("storing_quiz"),
 			v.literal("completed"),
-			v.literal("failed")
+			v.literal("failed"),
 		),
 		statusMessage: v.optional(v.string()),
 		// Original arguments for the quiz generation
 		contentType: v.union(
 			v.literal("file"),
 			v.literal("url"),
-			v.literal("prompt")
+			v.literal("prompt"),
 		),
 		content: v.string(), // file URL, website URL, or text content
 		quizSettings: v.object({
@@ -107,14 +108,14 @@ const schema = defineSchema({
 				v.literal("mix"),
 				v.literal("easy"),
 				v.literal("medium"),
-				v.literal("hard")
+				v.literal("hard"),
 			),
 			questionCount: v.union(
 				v.literal("5"),
 				v.literal("10"),
 				v.literal("15"),
-				v.literal("30")
-			)
+				v.literal("30"),
+			),
 		}),
 		title: v.optional(v.string()), // optional title for text prompts
 
@@ -130,6 +131,42 @@ const schema = defineSchema({
 		createdAt: v.number(),
 		updatedAt: v.number(),
 	}).index("by_user", ["userId"]),
+
+	multiplayer_rooms: defineTable({
+		code: v.string(), // room code
+		quizId: v.id("quizzes"),
+		hostId: v.id("users"),
+		status: v.union(
+			v.literal("waiting"),
+			v.literal("active"),
+			v.literal("finished"),
+		),
+		currentQuestionIndex: v.number(),
+		currentQuestionStartedAt: v.optional(v.number()),
+	})
+		.index("by_code", ["code"])
+		.index("by_host", ["hostId"]),
+
+	multiplayer_players: defineTable({
+		roomId: v.id("multiplayer_rooms"),
+		userId: v.id("users"),
+		isHost: v.boolean(),
+		joinedAt: v.number(),
+		score: v.number(),
+		questionAnswers: v.array(
+			v.object({
+				questionIndex: v.number(),
+				selectedIndex: v.number(),
+				isCorrect: v.boolean(),
+				timeTaken: v.number(),
+				answeredAt: v.number(),
+			}),
+		),
+		hasAnsweredCurrentQuestion: v.boolean(),
+	})
+		.index("by_room", ["roomId"])
+		.index("by_user", ["userId"])
+		.index("by_room_user", ["roomId", "userId"]),
 });
 
 export default schema;

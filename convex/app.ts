@@ -201,3 +201,15 @@ export const deleteCurrentUserAccount = mutation({
 		await ctx.db.delete(user._id);
 	},
 });
+
+export const getLeaderboard = query({
+	args: {},
+	handler: async (ctx) => {
+		const leaderboard = await ctx.db.query("users").collect();
+		const topTenHighestExpUsers = leaderboard
+			.sort((a, b) => b.exp - a.exp)
+			.slice(0, 10);
+
+		return topTenHighestExpUsers;
+	},
+});

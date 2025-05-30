@@ -2,9 +2,11 @@
 import { generateObject, generateText } from "ai";
 import { v } from "convex/values";
 import { z } from "zod";
+import { api, internal } from "./_generated/api";
 import { action } from "./_generated/server";
 import { DEFAULT_MODEL, MISTRAL_NEMO_MODEL } from "./constants";
 import { openrouter } from "./lib";
+import { vv } from "./schema";
 import {
 	analyzePDFContent,
 	analyzeTextContent,
@@ -666,22 +668,22 @@ const QuizQuestionSchema = z.object({
 		.array(z.string().min(1, "Option cannot be empty"))
 		.min(2, "At least 2 options required")
 		.describe(
-			"Array of answer choices: 4 options for multiple_choice, 2 for true_false (True/False), or 4-6 for multiple_selection",
+			"Array of answer choices: 4 options for multiple_choice, 2 for true_false (True/False)",
 		),
 	difficulty: z
 		.enum(["easy", "medium", "hard"])
 		.describe("Difficulty level of the question"),
 	questionType: z
-		.enum(["multiple_choice", "true_false", "multiple_selection"])
+		.enum(["multiple_choice", "true_false"])
 		.describe(
-			"Type of question: multiple_choice (one correct answer), true_false (True/False options), or multiple_selection (multiple correct answers)",
+			"Type of question: multiple_choice (one correct answer), true_false (True/False options)",
 		),
 	correctOptionIndex: z
 		.number()
 		.int()
 		.min(0, "Correct option index must be non-negative")
 		.describe(
-			"Zero-based index of the correct answer for multiple_choice/true_false, or array of indices for multiple_selection",
+			"Zero-based index of the correct answer for multiple_choice/true_false",
 		),
 	explanation: z
 		.string()
@@ -787,11 +789,7 @@ export const quizGenerator = action({
 			// Extract settings with defaults
 			const numQuestions = quizSettings.numQuestions || 5;
 			const difficulty = quizSettings.difficulty || "mix";
-			const questionTypes = [
-				"multiple_choice",
-				"true_false",
-				"multiple_selection",
-			]; // Always use mixed question types
+			const questionTypes = ["multiple_choice", "true_false"]; // Always use mixed question types
 			const targetAudience = quizSettings.targetAudience || "sma";
 			const language = metadata.language;
 
@@ -803,7 +801,6 @@ Your task is to generate ${numQuestions} quiz questions with ${difficulty} diffi
 Question Types to Generate:
 ${questionTypes.includes("multiple_choice") ? "- Multiple Choice: Provide exactly 4 options with only one correct answer" : ""}
 ${questionTypes.includes("true_false") ? "- True/False: Provide 2 options ('True' and 'False')" : ""}
-${questionTypes.includes("multiple_selection") ? "- Multiple Selection: Provide 4-6 options with multiple correct answers" : ""}
 
 CRITICAL REQUIREMENTS:
 1. Respond with ONLY a valid JSON object matching the required schema
@@ -903,6 +900,113 @@ Remember to respond with ONLY the JSON array of question objects.`;
 				throw new Error(`Failed to generate quiz: ${error.message}`);
 			}
 			throw new Error(`Failed to generate quiz: ${String(error)}`);
+		}
+	},
+});
+
+export const generateFeedbackFromQuizResult = action({
+	args: {
+		attemptId: vv.id("quiz_attempts"),
+	},
+	handler: async (ctx, args) => {
+		const attempt = await ctx.runQuery(api.quizzes.getQuizAttempt, {
+			attemptId: args.attemptId,
+		});
+
+		if (!attempt) {
+			throw new Error("Quiz attempt not found");
+		}
+
+		if (attempt.feedback) {
+			return;
+		}
+
+		const quiz = await ctx.runQuery(api.quizzes.getQuiz, {
+			id: attempt.quizId,
+		});
+
+		// Ensure enrichedAnswers and quizTitle are present from the getQuizAttempt query
+		if (
+			!attempt.questionAnswers ||
+			!quiz.title ||
+			typeof attempt.totalScore === "undefined" ||
+			!attempt.questionAnswers.length
+		) {
+			console.error(
+				"Attempt data is missing necessary fields (enrichedAnswers, quizTitle, score, or answers length is zero)",
+				attempt,
+			);
+			throw new Error(
+				"Insufficient data from quiz attempt to generate feedback.",
+			);
+		}
+
+		const prompt = `
+		Kamu adalah asisten AI yang memberikan umpan balik atas hasil kuis yang telah dikerjakan oleh pengguna.
+		
+		Pengguna telah menyelesaikan kuis berjudul "${quiz.title}" dengan skor total ${attempt.totalScore} dari ${attempt.questionAnswers.length} soal.
+		
+		Berikut adalah ringkasan jawaban pengguna:
+		${attempt.questionAnswers
+			.map(
+				(ans, index) => `
+		Soal ${index + 1}: ${quiz.questions[ans.questionIndex].question}
+		Pilihan Jawaban:
+		${quiz.questions[ans.questionIndex].options.map((opt, optIndex) => `  ${String.fromCharCode(65 + optIndex)}) ${opt}`).join("\n")}
+		Jawaban Kamu: ${quiz.questions[ans.questionIndex].options[ans.selectedIndex]} (${ans.isCorrect ? "Benar" : "Salah"})
+		Jawaban yang Benar: ${quiz.questions[ans.questionIndex].options[quiz.questions[ans.questionIndex].correctOptionIndex]}
+		`,
+			)
+			.join("\n\n")}
+		
+		Tugas kamu adalah memberikan feedback yang membangun dalam Bahasa Indonesia.
+		
+		Strukturnya:
+		1. **Kekuatan**: Hal-hal yang sudah dikuasai dengan baik oleh pengguna, sebutkan jika ada soal tertentu yang menjadi bukti.
+		2. **Perlu Ditingkatkan**: Hal-hal yang masih kurang dipahami, sebutkan soal atau topik tertentu.
+		   - Sertakan saran singkat namun jelas, seperti "Coba pelajari ulang konsep X" atau "Latih soal-soal serupa".
+		3. **Kesimpulan Umum**: Kalimat penutup yang memotivasi pengguna untuk terus belajar.
+		
+		Gaya bahasa harus:
+		- Ringan dan bersahabat, seolah berbicara dengan teman sebaya.
+		- Tetap informatif dan to the point.
+		- Tidak terlalu panjang, tapi cukup untuk membuat pengguna paham area mana yang perlu ditingkatkan.
+		
+		Contoh gaya penulisan:
+		---
+		
+		**Kekuatan:**
+		- Kamu sudah cukup paham tentang [topik A], terlihat dari jawaban benar di soal [nomor].
+		- Pemahamanmu soal [topik B] juga bagus, lanjutkan ya!
+		
+		**Perlu Ditingkatkan:**
+		- Di soal [nomor], kamu masih keliru memahami [konsep X].
+		  - Saran: Coba ulangi materi tentang [X] dan latihan lagi soal sejenis.
+		- Kamu juga bisa memperdalam topik [Y] agar lebih mantap.
+		
+		**Kesimpulan:**
+		Semangat terus! Belajar itu proses. Jawaban yang salah bukan akhir, tapi langkah menuju paham 💪. Yuk lanjutkan belajarnya!
+		`;
+
+		try {
+			const { text: generatedFeedback } = await generateText({
+				model: openrouter(MISTRAL_NEMO_MODEL),
+				prompt: prompt,
+			});
+
+			// Save feedback to quiz_attempt
+			await ctx.runMutation(
+				internal.internal_quizzes.updateQuizAttemptFeedback,
+				{
+					attemptId: args.attemptId,
+					feedback: generatedFeedback,
+				},
+			);
+
+			return true;
+		} catch (error) {
+			console.error("Failed to generate feedback from AI:", error);
+			throw new Error(`Failed to generate feedback: ${String(error)}`);
 		}
 	},
 });

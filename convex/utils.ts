@@ -1179,7 +1179,7 @@ export function createPDFUserPrompt(params: {
 [Concrete examples or applications that can be made into contextual questions]
 
 ### Evaluation Points
-[Aspects suitable for various types of questions (multiple choice, true/false, and multiple selection)]
+[Aspects suitable for various types of questions (multiple choice, true/false)]
 `;
 
 	const qualityCriteria = isIndonesian
@@ -1414,7 +1414,7 @@ export function createWEBUserPrompt(params: {
 [Concrete examples or applications that can be made into contextual questions]
 
 ### Evaluation Points
-[Aspects suitable for various types of questions (multiple choice, true/false, and multiple selection)]
+[Aspects suitable for various types of questions (multiple choice, true/false)]
 `;
 
 	const qualityCriteria = isIndonesian
@@ -1708,7 +1708,7 @@ Expected format:
 - Estimated Reading Time: ${metrics.estimatedReadingTime} minutes
 - Target Audience: ${targetAudience}
 ${focusArea ? `- Focus Area: ${focusArea}` : ""}
-- Quiz Type: Mixed (multiple choice, true/false, multiple selection)
+- Quiz Type: Mixed (multiple choice, true/false)
 
 **CONTENT TO ANALYZE:**
 ${content}
@@ -1726,7 +1726,7 @@ Create a structured and comprehensive summary with the following format:
 [Detailed explanation of topics students need to understand]
 
 ## Quiz Points
-[Identify areas suitable for various question types (multiple choice, true/false, multiple selection) based on ${targetAudience} level]
+[Identify areas suitable for various question types (multiple choice, true/false) based on ${targetAudience} level]
 
 ## Conclusion
 [Brief summary and relevance for learning]

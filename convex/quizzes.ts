@@ -67,7 +67,6 @@ export const storeQuiz = mutation({
 				questionType: v.union(
 					v.literal("multiple_choice"),
 					v.literal("true_false"),
-					v.literal("multiple_selection"),
 				),
 				correctOptionIndex: v.number(),
 				explanation: v.string(),
@@ -526,10 +525,7 @@ export const generateQuizFromContentWorkflow = workflow.define({
 				question: q.question,
 				options: q.options,
 				difficulty: q.difficulty as "easy" | "medium" | "hard",
-				questionType: q.questionType as
-					| "multiple_choice"
-					| "true_false"
-					| "multiple_selection",
+				questionType: q.questionType as "multiple_choice" | "true_false",
 				correctOptionIndex: q.correctOptionIndex,
 				explanation: q.explanation,
 			}));
