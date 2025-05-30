@@ -3,6 +3,7 @@ import { Logo } from "@/components/ui/logo";
 import siteConfig from "@/site.config";
 import { createFileRoute } from "@tanstack/react-router";
 import { PromptInputArea } from "./-ui-input-prompt-area";
+import { QuizGenerationStatus } from "./-ui-quiz-generation-status";
 import { QuizGeneratorProvider } from "./-ui.quiz-generator-context";
 
 export const Route = createFileRoute("/_app/_authenticated/dashboard/_layout/")(
@@ -39,6 +40,9 @@ function RouteComponent() {
 						</h1>
 
 						<PromptInputArea />
+
+						{/* Display active quiz generation tasks */}
+						<QuizGenerationStatus />
 
 						{/* Example Prompts */}
 						{/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  relative z-10 py-10 max-w-7xl mx-auto">

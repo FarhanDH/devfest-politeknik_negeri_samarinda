@@ -949,6 +949,15 @@ export async function extractPDFContent(
 export function isValidPDFURL(url: string): boolean {
 	try {
 		const urlObj = new URL(url);
+
+		// Check for valid HTTP/HTTPS protocols
+		if (urlObj.protocol !== "http:" && urlObj.protocol !== "https:") {
+			console.warn(
+				`Invalid protocol for PDF URL: ${urlObj.protocol} in URL: ${url}`,
+			);
+			return false;
+		}
+
 		// Existing checks
 		if (
 			/\\.(pdf)$/i.test(urlObj.pathname) ||
@@ -1630,7 +1639,7 @@ export function createTextUserPrompt(params: {
 	metrics: { wordCount: number; estimatedReadingTime: number };
 	contentType: "academic" | "tutorial" | "reference" | "general";
 	language: "id" | "en";
-	targetAudience: "smp" | "sma" | "kuliah" | "umum";
+	targetAudience: "sd" | "smp" | "sma" | "kuliah";
 	focusArea?: string;
 }): string {
 	const {
