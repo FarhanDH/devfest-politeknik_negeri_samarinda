@@ -10,7 +10,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Logo } from "@/components/ui/logo";
-import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/clerk-react";
 import type { Doc } from "@cvx/_generated/dataModel";
@@ -76,24 +75,56 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 					<div className="md:hidden">
 						<DropdownMenu modal={false}>
 							<DropdownMenuTrigger asChild>
-								<Button variant="link" size="icon" className="text-foreground hover:bg-accent/20 p-2 rounded-md">
+								<Button
+									variant="link"
+									size="icon"
+									className="text-foreground hover:bg-accent/20 p-2 rounded-md"
+								>
 									<Menu className="h-6 w-6" />
 									<span className="sr-only">Open menu</span>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent sideOffset={8} align="end" className="bg-card border-border shadow-md w-48">
+							<DropdownMenuContent
+								sideOffset={8}
+								align="end"
+								className="bg-card border-border shadow-md w-48"
+							>
 								<DropdownMenuItem asChild>
-									<Link to="/dashboard" className={cn("w-full flex justify-start items-center px-2 py-1.5 text-sm", isDashboardPath ? "text-primary font-semibold" : "text-foreground")}>
+									<Link
+										to="/dashboard"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isDashboardPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
 										Dashboard
 									</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem asChild>
-									<Link to="/dashboard/leaderboard" className={cn("w-full flex justify-start items-center px-2 py-1.5 text-sm", isLeaderboardPath ? "text-primary font-semibold" : "text-foreground")}>
+									<Link
+										to="/dashboard/leaderboard"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isLeaderboardPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
 										Leaderboard
 									</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem asChild>
-									<Link to="/dashboard/settings" className={cn("w-full flex justify-start items-center px-2 py-1.5 text-sm", isSettingsPath ? "text-primary font-semibold" : "text-foreground")}>
+									<Link
+										to="/dashboard/settings"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isSettingsPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
 										Settings
 									</Link>
 								</DropdownMenuItem>
@@ -140,10 +171,10 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground" />
 							</DropdownMenuItem>
 
-							<DropdownMenuItem className="flex h-9 items-center justify-between rounded-md px-2">
+							{/* <DropdownMenuItem className="flex h-9 items-center justify-between rounded-md px-2">
 								<span className="text-sm text-foreground">Theme</span>
 								<ThemeSwitcher />
-							</DropdownMenuItem>
+							</DropdownMenuItem> */}
 
 							<DropdownMenuSeparator className="mx-0 my-2 h-[1px] bg-border" />
 
