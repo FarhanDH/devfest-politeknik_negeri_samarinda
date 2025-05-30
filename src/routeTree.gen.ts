@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AppAuthenticatedImport } from './routes/_app/_authenticated'
+import { Route as AppAuthenticatedPlaygroundIndexImport } from './routes/_app/_authenticated/playground/index'
 import { Route as AppAuthenticatedOnboardingLayoutImport } from './routes/_app/_authenticated/onboarding/_layout'
 import { Route as AppAuthenticatedDashboardLayoutImport } from './routes/_app/_authenticated/dashboard/_layout'
 import { Route as AppAuthenticatedDashboardLayoutIndexImport } from './routes/_app/_authenticated/dashboard/_layout.index'
@@ -64,6 +65,13 @@ const AppAuthenticatedDashboardRoute = AppAuthenticatedDashboardImport.update({
   path: '/dashboard',
   getParentRoute: () => AppAuthenticatedRoute,
 } as any)
+
+const AppAuthenticatedPlaygroundIndexRoute =
+  AppAuthenticatedPlaygroundIndexImport.update({
+    id: '/playground/',
+    path: '/playground/',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
 
 const AppAuthenticatedOnboardingLayoutRoute =
   AppAuthenticatedOnboardingLayoutImport.update({
@@ -164,6 +172,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding'
       preLoaderRoute: typeof AppAuthenticatedOnboardingLayoutImport
       parentRoute: typeof AppAuthenticatedOnboardingRoute
+    }
+    '/_app/_authenticated/playground/': {
+      id: '/_app/_authenticated/playground/'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof AppAuthenticatedPlaygroundIndexImport
+      parentRoute: typeof AppAuthenticatedImport
     }
     '/_app/_authenticated/dashboard/_layout/settings': {
       id: '/_app/_authenticated/dashboard/_layout/settings'
@@ -289,11 +304,13 @@ const AppAuthenticatedOnboardingRouteWithChildren =
 interface AppAuthenticatedRouteChildren {
   AppAuthenticatedDashboardRoute: typeof AppAuthenticatedDashboardRouteWithChildren
   AppAuthenticatedOnboardingRoute: typeof AppAuthenticatedOnboardingRouteWithChildren
+  AppAuthenticatedPlaygroundIndexRoute: typeof AppAuthenticatedPlaygroundIndexRoute
 }
 
 const AppAuthenticatedRouteChildren: AppAuthenticatedRouteChildren = {
   AppAuthenticatedDashboardRoute: AppAuthenticatedDashboardRouteWithChildren,
   AppAuthenticatedOnboardingRoute: AppAuthenticatedOnboardingRouteWithChildren,
+  AppAuthenticatedPlaygroundIndexRoute: AppAuthenticatedPlaygroundIndexRoute,
 }
 
 const AppAuthenticatedRouteWithChildren =
@@ -314,6 +331,7 @@ export interface FileRoutesByFullPath {
   '': typeof AppAuthenticatedRouteWithChildren
   '/dashboard': typeof AppAuthenticatedDashboardLayoutRouteWithChildren
   '/onboarding': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/playground': typeof AppAuthenticatedPlaygroundIndexRoute
   '/dashboard/settings': typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
   '/onboarding/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/onboarding/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
@@ -326,6 +344,7 @@ export interface FileRoutesByTo {
   '': typeof AppAuthenticatedRouteWithChildren
   '/dashboard': typeof AppAuthenticatedDashboardLayoutIndexRoute
   '/onboarding': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/playground': typeof AppAuthenticatedPlaygroundIndexRoute
   '/onboarding/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/onboarding/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
   '/dashboard/settings': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
@@ -340,6 +359,7 @@ export interface FileRoutesById {
   '/_app/_authenticated/dashboard/_layout': typeof AppAuthenticatedDashboardLayoutRouteWithChildren
   '/_app/_authenticated/onboarding': typeof AppAuthenticatedOnboardingRouteWithChildren
   '/_app/_authenticated/onboarding/_layout': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/_app/_authenticated/playground/': typeof AppAuthenticatedPlaygroundIndexRoute
   '/_app/_authenticated/dashboard/_layout/settings': typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
   '/_app/_authenticated/onboarding/_layout/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/_app/_authenticated/onboarding/_layout/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
@@ -354,6 +374,7 @@ export interface FileRouteTypes {
     | ''
     | '/dashboard'
     | '/onboarding'
+    | '/playground'
     | '/dashboard/settings'
     | '/onboarding/education-level'
     | '/onboarding/username'
@@ -365,6 +386,7 @@ export interface FileRouteTypes {
     | ''
     | '/dashboard'
     | '/onboarding'
+    | '/playground'
     | '/onboarding/education-level'
     | '/onboarding/username'
     | '/dashboard/settings'
@@ -377,6 +399,7 @@ export interface FileRouteTypes {
     | '/_app/_authenticated/dashboard/_layout'
     | '/_app/_authenticated/onboarding'
     | '/_app/_authenticated/onboarding/_layout'
+    | '/_app/_authenticated/playground/'
     | '/_app/_authenticated/dashboard/_layout/settings'
     | '/_app/_authenticated/onboarding/_layout/education-level'
     | '/_app/_authenticated/onboarding/_layout/username'
@@ -423,7 +446,8 @@ export const routeTree = rootRoute
       "parent": "/_app",
       "children": [
         "/_app/_authenticated/dashboard",
-        "/_app/_authenticated/onboarding"
+        "/_app/_authenticated/onboarding",
+        "/_app/_authenticated/playground/"
       ]
     },
     "/_app/_authenticated/dashboard": {
@@ -455,6 +479,10 @@ export const routeTree = rootRoute
         "/_app/_authenticated/onboarding/_layout/education-level",
         "/_app/_authenticated/onboarding/_layout/username"
       ]
+    },
+    "/_app/_authenticated/playground/": {
+      "filePath": "_app/_authenticated/playground/index.tsx",
+      "parent": "/_app/_authenticated"
     },
     "/_app/_authenticated/dashboard/_layout/settings": {
       "filePath": "_app/_authenticated/dashboard/_layout.settings.tsx",

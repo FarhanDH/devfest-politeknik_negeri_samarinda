@@ -80,4 +80,17 @@ export default defineSchema({
 		.index("by_quiz", ["quizId"])
 		.index("by_user", ["userId"])
 		.index("by_user_quiz", ["userId", "quizId"]),
+
+	// rooms multiplayer schema
+	rooms: defineTable({
+		name: v.string(),
+		createdBy: v.id("users"),
+	}),
+
+	//  participants schema for multiplayer rooms
+	participants: defineTable({
+		roomId: v.id("rooms"),
+		userId: v.id("users"),
+		peerId: v.string(),
+	}).index("by_room", ["roomId"]),
 });
