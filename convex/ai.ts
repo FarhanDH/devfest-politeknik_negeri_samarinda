@@ -668,22 +668,22 @@ const QuizQuestionSchema = z.object({
 		.array(z.string().min(1, "Option cannot be empty"))
 		.min(2, "At least 2 options required")
 		.describe(
-			"Array of answer choices: 4 options for multiple_choice, 2 for true_false (True/False), or 4-6 for multiple_selection",
+			"Array of answer choices: 4 options for multiple_choice, 2 for true_false (True/False)",
 		),
 	difficulty: z
 		.enum(["easy", "medium", "hard"])
 		.describe("Difficulty level of the question"),
 	questionType: z
-		.enum(["multiple_choice", "true_false", "multiple_selection"])
+		.enum(["multiple_choice", "true_false"])
 		.describe(
-			"Type of question: multiple_choice (one correct answer), true_false (True/False options), or multiple_selection (multiple correct answers)",
+			"Type of question: multiple_choice (one correct answer), true_false (True/False options)",
 		),
 	correctOptionIndex: z
 		.number()
 		.int()
 		.min(0, "Correct option index must be non-negative")
 		.describe(
-			"Zero-based index of the correct answer for multiple_choice/true_false, or array of indices for multiple_selection",
+			"Zero-based index of the correct answer for multiple_choice/true_false",
 		),
 	explanation: z
 		.string()
@@ -789,11 +789,7 @@ export const quizGenerator = action({
 			// Extract settings with defaults
 			const numQuestions = quizSettings.numQuestions || 5;
 			const difficulty = quizSettings.difficulty || "mix";
-			const questionTypes = [
-				"multiple_choice",
-				"true_false",
-				"multiple_selection",
-			]; // Always use mixed question types
+			const questionTypes = ["multiple_choice", "true_false"]; // Always use mixed question types
 			const targetAudience = quizSettings.targetAudience || "sma";
 			const language = metadata.language;
 
@@ -805,7 +801,6 @@ Your task is to generate ${numQuestions} quiz questions with ${difficulty} diffi
 Question Types to Generate:
 ${questionTypes.includes("multiple_choice") ? "- Multiple Choice: Provide exactly 4 options with only one correct answer" : ""}
 ${questionTypes.includes("true_false") ? "- True/False: Provide 2 options ('True' and 'False')" : ""}
-${questionTypes.includes("multiple_selection") ? "- Multiple Selection: Provide 4-6 options with multiple correct answers" : ""}
 
 CRITICAL REQUIREMENTS:
 1. Respond with ONLY a valid JSON object matching the required schema
