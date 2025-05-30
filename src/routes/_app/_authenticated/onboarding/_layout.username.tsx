@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/retroui/Button";
+import { Input } from "@/components/retroui/Input";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import { useForm } from "@tanstack/react-form";
@@ -65,7 +65,7 @@ export default function OnboardingUsername() {
 				<h3 className="text-center text-2xl font-medium text-primary">
 					Welcome!
 				</h3>
-				<p className="text-center text-base font-normal text-primary/60">
+				<p className="text-center text-base font-normal">
 					Let's get started by choosing a username.
 				</p>
 			</div>
@@ -91,7 +91,7 @@ export default function OnboardingUsername() {
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								className={`bg-transparent ${
+								className={`${
 									field.state.meta?.errors.length > 0 &&
 									"border-destructive focus-visible:ring-destructive"
 								}`}
@@ -102,18 +102,18 @@ export default function OnboardingUsername() {
 
 				<div className="flex flex-col">
 					{form.state.fieldMeta.username?.errors.length > 0 && (
-						<span className="mb-2 text-sm text-destructive dark:text-destructive-foreground">
-							{form.state.fieldMeta.username?.errors.join(" ")}
+						<span className="mb-2 text-sm text-destructive">
+							{form.state.fieldMeta.username?.errors[0].message}
 						</span>
 					)}
 				</div>
 
-				<Button type="submit" size="sm" className="w-full">
+				<Button type="submit" size="sm" className="w-full justify-center">
 					{isPending ? <Loader2 className="animate-spin" /> : "Continue"}
 				</Button>
 			</form>
 
-			<p className="px-6 text-center text-sm font-normal leading-normal text-primary/60">
+			<p className="px-6 text-center text-sm font-normal leading-normal text-muted-foreground">
 				You can update your username at any time from your account settings.
 			</p>
 		</div>

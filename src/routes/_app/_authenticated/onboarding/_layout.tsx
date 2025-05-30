@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/_authenticated/onboarding/_layout")(
 
 export default function OnboardingLayout() {
 	return (
-		<div className="relative flex h-screen w-full bg-card">
+		<div className="relative flex h-screen w-full">
 			<div className="absolute left-1/2 top-8 mx-auto -translate-x-1/2 transform justify-center">
 				<Logo />
 			</div>

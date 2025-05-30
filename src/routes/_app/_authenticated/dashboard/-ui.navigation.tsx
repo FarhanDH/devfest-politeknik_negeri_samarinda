@@ -38,7 +38,10 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 				<div className="flex h-10 items-center gap-3">
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="h-10 w-10 rounded-full p-0 hover:bg-accent/50">
+							<Button
+								variant="ghost"
+								className="h-10 w-10 rounded-full p-0 hover:bg-accent/50"
+							>
 								{user.profileImage ? (
 									<img
 										className="h-10 w-10 rounded-full border-2 border-black object-cover"
@@ -47,7 +50,9 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 									/>
 								) : (
 									<div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-primary text-sm font-medium text-foreground">
-										{(user?.username || user?.email || 'U').charAt(0).toUpperCase()}
+										{(user?.username || user?.email || "U")
+											.charAt(0)
+											.toUpperCase()}
 									</div>
 								)}
 							</Button>
@@ -75,9 +80,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground group-hover:text-primary" />
 							</DropdownMenuItem>
 
-							<DropdownMenuItem
-								className="group flex h-9 items-center justify-between rounded-md px-2 hover:bg-accent/20"
-							>
+							<DropdownMenuItem className="group flex h-9 items-center justify-between rounded-md px-2 hover:bg-accent/20">
 								<span className="text-sm text-foreground group-hover:text-primary">
 									Theme
 								</span>
