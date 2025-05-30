@@ -15,11 +15,13 @@ export default defineSchema({
 		profileImage: v.optional(v.string()),
 		alreadyOnboarded: v.boolean(),
 		exp: v.float64(),
-		education_level: v.union(
-			v.literal("sd"),
-			v.literal("smp"),
-			v.literal("sma"),
-			v.literal("kuliah"),
+		education_level: v.optional(
+			v.union(
+				v.literal("sd"),
+				v.literal("smp"),
+				v.literal("sma"),
+				v.literal("kuliah"),
+			),
 		),
 	}).index("by_user_id", ["userId"]),
 

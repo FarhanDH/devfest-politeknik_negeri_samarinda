@@ -12,6 +12,14 @@ import { createOrUpdateUser } from "./users";
 export const completeOnboarding = mutation({
 	args: {
 		username: v.string(),
+		education_level: v.optional(
+			v.union(
+				v.literal("sd"),
+				v.literal("smp"),
+				v.literal("sma"),
+				v.literal("kuliah"),
+			),
+		),
 	},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity();
@@ -26,7 +34,7 @@ export const completeOnboarding = mutation({
 			profileImage: identity.pictureUrl || "",
 			userId: identity.subject,
 			exp: identity.exp ? Number(identity.exp) : 0,
-			education_level: "sd", // Default value, can be changed later
+			education_level: args.education_level, // Default value, can be changed later
 		});
 
 		if (!user) {
