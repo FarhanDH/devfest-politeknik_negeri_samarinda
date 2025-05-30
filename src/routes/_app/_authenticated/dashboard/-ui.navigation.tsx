@@ -1,6 +1,6 @@
 import { LogOut, Settings } from "lucide-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/retroui/Button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -38,7 +38,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button
-								variant="ghost"
+								variant="link"
 								className="h-10 w-10 rounded-full p-0 hover:bg-accent/50"
 							>
 								{user.profileImage ? (
@@ -56,12 +56,9 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 								)}
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent
-							sideOffset={8}
-							className="fixed -right-4 min-w-56 border-2 border-black bg-card p-2 shadow-md"
-						>
-							<DropdownMenuItem className="group flex-col items-start focus:bg-accent/20">
-								<p className="text-sm font-medium text-foreground group-hover:text-primary">
+						<DropdownMenuContent sideOffset={8} align="end">
+							<DropdownMenuItem className="flex-col items-start">
+								<p className="text-sm font-medium text-foreground">
 									{user?.username || ""}
 								</p>
 								<p className="text-sm text-muted-foreground">{user?.email}</p>
@@ -70,30 +67,24 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 							<DropdownMenuSeparator className="mx-0 my-2 h-[1px] bg-border" />
 
 							<DropdownMenuItem
-								className="group h-9 w-full cursor-pointer justify-between rounded-md px-2 hover:bg-accent/20"
+								className="h-9 w-full cursor-pointer justify-between rounded-md px-2"
 								onClick={() => navigate({ to: "/dashboard/settings" })}
 							>
-								<span className="text-sm text-foreground group-hover:text-primary">
-									Settings
-								</span>
-								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground group-hover:text-primary" />
+								<span className="text-sm text-foreground">Settings</span>
+								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground" />
 							</DropdownMenuItem>
 
-							<DropdownMenuItem className="group flex h-9 items-center justify-between rounded-md px-2 hover:bg-accent/20">
-								<span className="text-sm text-foreground group-hover:text-primary">
-									Theme
-								</span>
+							<DropdownMenuItem className="flex h-9 items-center justify-between rounded-md px-2">
+								<span className="text-sm text-foreground">Theme</span>
 								<ThemeSwitcher />
 							</DropdownMenuItem>
 
 							<DropdownMenuSeparator className="mx-0 my-2 h-[1px] bg-border" />
 
 							<SignOutButton redirectUrl="/">
-								<DropdownMenuItem className="group h-9 w-full cursor-pointer justify-between rounded-md px-2 hover:bg-destructive/10 hover:text-destructive">
-									<span className="text-sm text-foreground group-hover:text-destructive">
-										Log Out
-									</span>
-									<LogOut className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground group-hover:text-destructive" />
+								<DropdownMenuItem className="flex h-9 items-center justify-between rounded-md px-2">
+									<span className="text-sm text-foreground">Log Out</span>
+									<LogOut className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground" />
 								</DropdownMenuItem>
 							</SignOutButton>
 						</DropdownMenuContent>
@@ -108,13 +99,15 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 						isDashboardPath ? "border-primary" : "border-transparent",
 					)}
 				>
-					<Link
-						to={"/dashboard"}
-						className={cn(
-							`${buttonVariants({ variant: "ghost", size: "sm" })} text-foreground`,
-						)}
-					>
-						Dashboard
+					<Link to={"/dashboard"}>
+						<Button
+							variant={"link"}
+							className={cn("hover:no-underline text-foreground", {
+								"text-primary": isDashboardPath,
+							})}
+						>
+							Dashboard
+						</Button>
 					</Link>
 				</div>
 				<div
@@ -123,13 +116,15 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 						isSettingsPath ? "border-primary" : "border-transparent",
 					)}
 				>
-					<Link
-						to={"/dashboard/settings"}
-						className={cn(
-							`${buttonVariants({ variant: "ghost", size: "sm" })} text-foreground`,
-						)}
-					>
-						Settings
+					<Link to={"/dashboard/settings"}>
+						<Button
+							variant={"link"}
+							className={cn("hover:no-underline text-foreground", {
+								"text-primary": isSettingsPath,
+							})}
+						>
+							Settings
+						</Button>
 					</Link>
 				</div>
 			</div>
