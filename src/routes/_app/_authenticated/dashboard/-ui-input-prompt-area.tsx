@@ -123,7 +123,7 @@ const WebsiteUrlCard: React.FC = () => {
 				</h3>
 				<div className="flex flex-col sm:flex-row gap-2">
 					<Input
-						// ref={urlRef}
+						ref={urlRef}
 						type="url"
 						placeholder="Paste URL here..."
 						className="text-sm border-2 border-border bg-background shadow-sm flex-1 font-sans"
@@ -141,6 +141,10 @@ const WebsiteUrlCard: React.FC = () => {
 						disabled={isProcessing}
 						onClick={() => {
 							if (urlRef.current?.value) {
+								console.log({
+									processingUrl: urlRef.current.value,
+								});
+
 								handleUrlSubmit(urlRef.current.value);
 							}
 						}}

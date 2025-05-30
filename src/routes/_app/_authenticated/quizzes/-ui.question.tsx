@@ -1,52 +1,10 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import type { Doc } from "@cvx/_generated/dataModel";
 import { Check, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
-export const DUMMY_QUESTIONS: Doc<"quizzes">["questions"] = [
-	{
-		question: "What is the capital of France?",
-		options: ["Paris", "London", "Berlin", "Madrid"],
-		difficulty: "easy",
-		questionType: "multiple_choice",
-		correctOptionIndex: 0,
-		explanation: "The capital of France is Paris.",
-	},
-	{
-		question: "What is the largest planet in our solar system?",
-		options: ["Earth", "Saturn", "Jupiter", "Uranus"],
-		difficulty: "medium",
-		questionType: "multiple_choice",
-		correctOptionIndex: 2,
-		explanation: "The largest planet in our solar system is Jupiter.",
-	},
-	{
-		question: "What is the boiling point of water in Kelvin?",
-		options: ["100", "200", "300", "373"],
-		difficulty: "hard",
-		questionType: "multiple_choice",
-		correctOptionIndex: 3,
-		explanation: "The boiling point of water in Kelvin is 373.",
-	},
-	{
-		question: "What is the chemical symbol for gold?",
-		options: ["Ag", "Au", "Hg", "Pb"],
-		difficulty: "medium",
-		questionType: "multiple_choice",
-		correctOptionIndex: 1,
-		explanation: "The chemical symbol for gold is Au.",
-	},
-	{
-		question: "What is the smallest country in the world?",
-		options: ["Vatican City", "Monaco", "San Marino", "Liechtenstein"],
-		difficulty: "easy",
-		questionType: "multiple_choice",
-		correctOptionIndex: 0,
-		explanation: "The smallest country in the world is Vatican City.",
-	},
-];
 
 interface QuestionProps {
 	data: Doc<"quizzes">["questions"][number];
@@ -57,6 +15,7 @@ interface QuestionProps {
 	isAnswered: boolean;
 	answeredIndex?: number;
 	questionNumber: number;
+	isTextToSpeechEnabled: boolean;
 }
 
 export const Question: React.FC<QuestionProps> = ({
@@ -68,10 +27,17 @@ export const Question: React.FC<QuestionProps> = ({
 	isAnswered,
 	answeredIndex,
 	questionNumber,
+	isTextToSpeechEnabled,
 }: QuestionProps): React.ReactElement => {
 	const [selectedOption, setSelectedOption] = useState<number | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const questionRef = useRef<HTMLDivElement>(null);
+	const { speak } = useTextToSpeech({});
+
+	const handleTextToSpeech = (text: string) => {
+		if (!isTextToSpeechEnabled) return;
+		speak(text);
+	};
 
 	// Scroll into view when the question becomes active
 	useEffect(() => {
@@ -129,7 +95,13 @@ export const Question: React.FC<QuestionProps> = ({
 					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
-					<p className="text-lg font-medium">{data.question}</p>
+					{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+					<p
+						className="text-lg font-medium"
+						onClick={() => handleTextToSpeech(data.question)}
+					>
+						{data.question}
+					</p>
 					<div className="space-y-2">
 						{data.options.map((option, optIdx) => (
 							<QuestionOption
@@ -142,9 +114,10 @@ export const Question: React.FC<QuestionProps> = ({
 								isCorrect={data.correctOptionIndex === optIdx}
 								isDisabled={isAnswered || !isActive}
 								isRevealed={isAnswered}
-								onSelect={() =>
-									!isAnswered && isActive && setSelectedOption(optIdx)
-								}
+								onSelect={() => {
+									!isAnswered && isActive && setSelectedOption(optIdx);
+									handleTextToSpeech(option);
+								}}
 							/>
 						))}
 					</div>

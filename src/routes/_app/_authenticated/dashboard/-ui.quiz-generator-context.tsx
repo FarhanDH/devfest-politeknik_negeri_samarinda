@@ -113,7 +113,9 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 		difficulty: "mix",
 		questionCount: "10",
 	});
-	const [activeTaskIds, setActiveTaskIds] = React.useState<Id<"quiz_tasks">[]>([]);
+	const [activeTaskIds, setActiveTaskIds] = React.useState<Id<"quiz_tasks">[]>(
+		[],
+	);
 
 	// Refs
 	const fileRef = React.useRef<HTMLInputElement>(null);
@@ -142,6 +144,12 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 
 		setIsProcessing(true);
+
+		console.log({
+			url,
+			sourceContent,
+			result,
+		});
 
 		try {
 			const promise = toast.promise(getWebsiteMetadata(url), {

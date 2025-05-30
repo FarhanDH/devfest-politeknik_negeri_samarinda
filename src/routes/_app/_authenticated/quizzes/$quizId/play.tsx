@@ -5,8 +5,9 @@ import { api } from "@cvx/_generated/api";
 import type { Doc, Id } from "@cvx/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react"; // Added useState
 import { QuizProvider, useQuiz } from "../-quiz-context";
+import { QuizPageHeader } from "../-quiz-header"; // Added QuizPageHeader import
 import { Question } from "../-ui.question";
 
 export const Route = createFileRoute(
@@ -20,6 +21,8 @@ export const Route = createFileRoute(
 
 function QuizContent() {
 	const { quizId } = Route.useParams();
+	const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false);
+	const toggleTextToSpeech = () => setIsTextToSpeechEnabled((prev) => !prev);
 	const { attemptId } = Route.useSearch();
 
 	const {
@@ -170,35 +173,48 @@ function QuizContent() {
 	};
 
 	return (
-		<div className="min-h-screen container mx-auto max-w-4xl py-8 pb-20">
-			<div className="flex flex-col w-full">
-				{quizData.questions
-					.filter((_, index: number) => index <= currentQuestionIndex)
-					.map(
-						(question: Doc<"quizzes">["questions"][number], index: number) => (
-							<Question
-								key={`question-${question.question}-${index}`}
-								data={question}
-								onSubmitAnswer={(selectedIndex) =>
-									handleSubmitAnswer(selectedIndex)
-								}
-								onNextQuestion={
-									index === currentQuestionIndex &&
-									index === quizData.questions.length - 1
-										? finishQuiz
-										: nextQuestion
-								}
-								isLastQuestion={index === quizData.questions.length - 1}
-								isActive={index === currentQuestionIndex}
-								isAnswered={answers.some((a) => a.questionIndex === index)}
-								answeredIndex={
-									answers.find((a) => a.questionIndex === index)?.selectedIndex
-								}
-								questionNumber={index}
-							/>
-						),
-					)}
-			</div>
+		<div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+			<QuizPageHeader
+				title={quizData?.title || "Playing Quiz"}
+				backLink={`/quizzes/${quizId}`}
+				isTextToSpeechEnabled={isTextToSpeechEnabled}
+				onToggleTextToSpeech={toggleTextToSpeech}
+			/>
+			<main className="container mx-auto max-w-4xl px-4 py-8 pb-20">
+				<div className="flex flex-col w-full">
+					{quizData.questions
+						.filter((_, index: number) => index <= currentQuestionIndex)
+						.map(
+							(
+								question: Doc<"quizzes">["questions"][number],
+								index: number,
+							) => (
+								<Question
+									isTextToSpeechEnabled={isTextToSpeechEnabled}
+									key={`question-${question.question}-${index}`}
+									data={question}
+									onSubmitAnswer={(selectedIndex) =>
+										handleSubmitAnswer(selectedIndex)
+									}
+									onNextQuestion={
+										index === currentQuestionIndex &&
+										index === quizData.questions.length - 1
+											? finishQuiz
+											: nextQuestion
+									}
+									isLastQuestion={index === quizData.questions.length - 1}
+									isActive={index === currentQuestionIndex}
+									isAnswered={answers.some((a) => a.questionIndex === index)}
+									answeredIndex={
+										answers.find((a) => a.questionIndex === index)
+											?.selectedIndex
+									}
+									questionNumber={index}
+								/>
+							),
+						)}
+				</div>
+			</main>
 		</div>
 	);
 }

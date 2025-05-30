@@ -13,7 +13,6 @@ import type { Id } from "@cvx/_generated/dataModel";
 import { vv } from "@cvx/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-	Link,
 	createFileRoute,
 	notFound,
 	useNavigate,
@@ -21,6 +20,7 @@ import {
 import { validate } from "convex-helpers/validators";
 import { ChevronLeft, FileQuestion } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/_authenticated/quizzes/$quizId/")({
 	component: RouteComponent,
@@ -39,6 +39,7 @@ export const Route = createFileRoute("/_app/_authenticated/quizzes/$quizId/")({
 
 function RouteComponent() {
 	const { quizId } = Route.useParams();
+	// const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false); // Reverted
 
 	const { data, isLoading } = useQuery(
 		convexQuery(api.quizzes.getQuiz, { id: quizId }),

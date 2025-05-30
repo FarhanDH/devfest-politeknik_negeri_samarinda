@@ -1,10 +1,11 @@
+import { doc } from "convex-helpers/validators";
 import { v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { ActionCtx, MutationCtx } from "./_generated/server";
 import { action, mutation, query } from "./_generated/server";
 import { workflow } from "./lib";
-import { vv } from "./schema";
+import schema, { vv } from "./schema";
 import { assertUserAuthenticated } from "./users";
 
 export const getQuiz = query({
@@ -341,16 +342,24 @@ export const kickoffGenerateQuizWorkflow = mutation({
 			internal.quizzes.generateQuizFromContentWorkflow,
 			{
 				taskId: args.taskId,
-				userId: user._id,
+				user,
 			},
 		); // Use FunctionReference from internal API
 	},
 });
 
 export const generateQuizFromContentWorkflow = workflow.define({
-	args: { taskId: vv.id("quiz_tasks"), userId: vv.id("users") },
-	handler: async (ctx, { taskId, userId }) => {
+	args: { taskId: vv.id("quiz_tasks"), user: doc(schema, "users") },
+	handler: async (ctx, { taskId, user }) => {
 		let task: Doc<"quiz_tasks"> | null;
+
+		if (!user) {
+			throw new Error("User not authenticated");
+		}
+
+		console.log({
+			tasks: "User authenticated case url",
+		});
 		try {
 			task = await ctx.runQuery(internal.internal_quizzes.getQuizTaskDetails, {
 				taskId,
@@ -386,10 +395,18 @@ export const generateQuizFromContentWorkflow = workflow.define({
 						throw new Error("Failed to get file URL");
 					}
 
-					const user = await ctx.runQuery(api.users.getCurrentUser, {});
-					if (!user) {
-						throw new Error("User not authenticated");
-					}
+					// const user = await ctx.runQuery(api.users.getCurrentUser, {});
+					// if (!user) {
+					// 	console.log({
+					// 		tasks: "User not authenticated",
+					// 	});
+
+					// 	throw new Error("User not authenticated");
+					// }
+
+					// console.log({
+					// 	tasks: "User authenticated",
+					// });
 					const result = await ctx.runAction(api.ai.pdfSummarizer, {
 						pdfPath: url,
 						targetAudience: user.education_level || "sma", // default, or could be from task.quizSettings or user profile
@@ -401,10 +418,17 @@ export const generateQuizFromContentWorkflow = workflow.define({
 					break;
 				}
 				case "url": {
-					const user = await ctx.runQuery(api.users.getCurrentUser, {});
-					if (!user) {
-						throw new Error("User not authenticated");
-					}
+					// const user = await ctx.runQuery(api.users.getCurrentUser, {});
+					// console.log({
+					// 	tasks: "User before checking authenticated case url",
+					// });
+					// if (!user) {
+					// 	throw new Error("User not authenticated");
+					// }
+
+					// console.log({
+					// 	tasks: "User authenticated case url",
+					// });
 					const result = await ctx.runAction(api.ai.websiteSummarizer, {
 						url: task.content,
 						targetAudience: user.education_level || "sma",
@@ -452,24 +476,27 @@ export const generateQuizFromContentWorkflow = workflow.define({
 			});
 
 			const numQuestions = Number.parseInt(task.quizSettings.questionCount);
-			const difficulty =
-				task.quizSettings.difficulty === "mix"
-					? "medium"
-					: task.quizSettings.difficulty;
 
 			if (metadata?.metrics) {
 				// biome-ignore lint/performance/noDelete: Standard practice for AI metadata cleaning
 				delete metadata.metrics;
 			}
 
+			console.log({
+				tasks: "Want to generate quiz questions",
+			});
+
 			const quizDataFromAI = await ctx.runAction(api.ai.quizGenerator, {
 				summary,
 				metadata,
 				quizSettings: {
 					numQuestions,
-					difficulty,
+					difficulty: task.quizSettings.difficulty,
 					targetAudience: "sma", // default, or could be from task.quizSettings or user profile
 				},
+			});
+			console.log({
+				tasks: "Already generated quiz questions",
 			});
 
 			if (!quizDataFromAI) {
@@ -481,6 +508,10 @@ export const generateQuizFromContentWorkflow = workflow.define({
 				status: "questions_generated",
 				statusMessage: "Quiz questions generated.",
 				quizDataFromAI,
+			});
+
+			console.log({
+				tasks: "Wnat to update quiz task to storing_quiz",
 			});
 
 			// Step 3: Store quiz in database
@@ -510,7 +541,9 @@ export const generateQuizFromContentWorkflow = workflow.define({
 				"Generated Quiz";
 			const description =
 				quizDataFromAI.description || `Quiz generated from ${task.contentType}`;
-
+			console.log({
+				tasks: "Wnat to store quiz to the database",
+			});
 			const quizId: Id<"quizzes"> = await ctx.runMutation(
 				api.quizzes.storeQuiz,
 				{
@@ -518,9 +551,13 @@ export const generateQuizFromContentWorkflow = workflow.define({
 					description,
 					questions: formattedQuestions,
 					quizContext,
-					userId,
+					userId: user._id,
 				},
 			);
+
+			console.log({
+				tasks: "Is Success?",
+			});
 
 			await ctx.runMutation(internal.internal_quizzes.updateQuizTask, {
 				taskId,
