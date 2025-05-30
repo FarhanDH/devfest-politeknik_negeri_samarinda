@@ -77,6 +77,7 @@ const schema = defineSchema({
 		startedAt: v.float64(),
 		totalScore: v.float64(),
 		userId: v.id("users"),
+		feedback: v.optional(v.string()),
 	})
 		.index("by_quiz", ["quizId"])
 		.index("by_user", ["userId"])

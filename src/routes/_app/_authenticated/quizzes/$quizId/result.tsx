@@ -13,9 +13,11 @@ import { api } from "@cvx/_generated/api";
 import type { Id } from "@cvx/_generated/dataModel";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useAction } from "convex/react";
 import { ArrowLeft, Award, Check, Clock, X } from "lucide-react";
 import { useEffect, useState } from "react";
-// import type { Doc } from '@cvx/_generated/dataModel'
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface QuizResultProps {
 	quizId: Id<"quizzes">;
@@ -40,6 +42,8 @@ function formatTime(ms: number): string {
 
 function QuizResult({ quizId, attemptId }: QuizResultProps) {
 	const [totalTimeTaken, setTotalTimeTaken] = useState<number>(0);
+	const [isGeneratingFeedback, setIsGeneratingFeedback] =
+		useState<boolean>(false);
 
 	// Fetch quiz data
 	const { data: quiz, isLoading: isQuizLoading } = useQuery(
@@ -52,6 +56,8 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 			attemptId: attemptId as Id<"quiz_attempts">,
 		}),
 	);
+
+	const generateFeedback = useAction(api.ai.generateFeedbackFromQuizResult);
 
 	// Log the attempt data for debugging
 	useEffect(() => {
@@ -72,8 +78,18 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 				0,
 			);
 			setTotalTimeTaken(totalTime);
+
+			generateFeedback({ attemptId: attempt._id });
 		}
 	}, [attempt]);
+
+	useEffect(() => {
+		if (attempt && !attempt.feedback) {
+			setIsGeneratingFeedback(true);
+			generateFeedback({ attemptId: attempt._id });
+			setIsGeneratingFeedback(false);
+		}
+	}, [attempt, attempt?.feedback]);
 
 	const navigate = useNavigate();
 
@@ -86,6 +102,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					</CardHeader>
 					<CardContent>
 						<p>Please wait while we load your quiz results.</p>
+						{isGeneratingFeedback && <p>Generating feedback...</p>}
 					</CardContent>
 				</Card>
 			</div>
@@ -210,6 +227,32 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					</Button>
 				</CardFooter>
 			</Card>
+
+			{!attempt.feedback && (
+				<Card className="mb-8 border-2 border-yellow-400 shadow-[4px_4px_0px_#000] bg-[var(--retro-background-alt)] text-[var(--retro-text-color)]">
+					<CardHeader>
+						<CardTitle className="text-xl text-[var(--retro-text-color)]">
+							✨ Evaluasi dari AI ✨
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p>Sedang mengevaluasi hasil pekerjaanmu...</p>
+					</CardContent>
+				</Card>
+			)}
+
+			{attempt?.feedback && (
+				<Card className="mb-8 border-2 border-yellow-400 shadow-[4px_4px_0px_#000] bg-[var(--retro-background-alt)] text-[var(--retro-text-color)]">
+					<CardHeader>
+						<CardTitle className="text-xl text-[var(--retro-text-color)]">
+							✨ Evaluasi dari AI ✨
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Markdown remarkPlugins={[remarkGfm]}>{attempt.feedback}</Markdown>
+					</CardContent>
+				</Card>
+			)}
 
 			{/* Question Review */}
 			<h2 className="text-2xl font-bold mb-4">Question Review</h2>

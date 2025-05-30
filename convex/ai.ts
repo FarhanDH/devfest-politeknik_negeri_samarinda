@@ -2,9 +2,11 @@
 import { generateObject, generateText } from "ai";
 import { v } from "convex/values";
 import { z } from "zod";
+import { api, internal } from "./_generated/api";
 import { action } from "./_generated/server";
 import { DEFAULT_MODEL, MISTRAL_NEMO_MODEL } from "./constants";
 import { openrouter } from "./lib";
+import { vv } from "./schema";
 import {
 	analyzePDFContent,
 	analyzeTextContent,
@@ -903,6 +905,113 @@ Remember to respond with ONLY the JSON array of question objects.`;
 				throw new Error(`Failed to generate quiz: ${error.message}`);
 			}
 			throw new Error(`Failed to generate quiz: ${String(error)}`);
+		}
+	},
+});
+
+export const generateFeedbackFromQuizResult = action({
+	args: {
+		attemptId: vv.id("quiz_attempts"),
+	},
+	handler: async (ctx, args) => {
+		const attempt = await ctx.runQuery(api.quizzes.getQuizAttempt, {
+			attemptId: args.attemptId,
+		});
+
+		if (!attempt) {
+			throw new Error("Quiz attempt not found");
+		}
+
+		if (attempt.feedback) {
+			return;
+		}
+
+		const quiz = await ctx.runQuery(api.quizzes.getQuiz, {
+			id: attempt.quizId,
+		});
+
+		// Ensure enrichedAnswers and quizTitle are present from the getQuizAttempt query
+		if (
+			!attempt.questionAnswers ||
+			!quiz.title ||
+			typeof attempt.totalScore === "undefined" ||
+			!attempt.questionAnswers.length
+		) {
+			console.error(
+				"Attempt data is missing necessary fields (enrichedAnswers, quizTitle, score, or answers length is zero)",
+				attempt,
+			);
+			throw new Error(
+				"Insufficient data from quiz attempt to generate feedback.",
+			);
+		}
+
+		const prompt = `
+		Kamu adalah asisten AI yang memberikan umpan balik atas hasil kuis yang telah dikerjakan oleh pengguna.
+		
+		Pengguna telah menyelesaikan kuis berjudul "${quiz.title}" dengan skor total ${attempt.totalScore} dari ${attempt.questionAnswers.length} soal.
+		
+		Berikut adalah ringkasan jawaban pengguna:
+		${attempt.questionAnswers
+			.map(
+				(ans, index) => `
+		Soal ${index + 1}: ${quiz.questions[ans.questionIndex].question}
+		Pilihan Jawaban:
+		${quiz.questions[ans.questionIndex].options.map((opt, optIndex) => `  ${String.fromCharCode(65 + optIndex)}) ${opt}`).join("\n")}
+		Jawaban Kamu: ${quiz.questions[ans.questionIndex].options[ans.selectedIndex]} (${ans.isCorrect ? "Benar" : "Salah"})
+		Jawaban yang Benar: ${quiz.questions[ans.questionIndex].options[quiz.questions[ans.questionIndex].correctOptionIndex]}
+		`,
+			)
+			.join("\n\n")}
+		
+		Tugas kamu adalah memberikan feedback yang membangun dalam Bahasa Indonesia.
+		
+		Strukturnya:
+		1. **Kekuatan**: Hal-hal yang sudah dikuasai dengan baik oleh pengguna, sebutkan jika ada soal tertentu yang menjadi bukti.
+		2. **Perlu Ditingkatkan**: Hal-hal yang masih kurang dipahami, sebutkan soal atau topik tertentu.
+		   - Sertakan saran singkat namun jelas, seperti "Coba pelajari ulang konsep X" atau "Latih soal-soal serupa".
+		3. **Kesimpulan Umum**: Kalimat penutup yang memotivasi pengguna untuk terus belajar.
+		
+		Gaya bahasa harus:
+		- Ringan dan bersahabat, seolah berbicara dengan teman sebaya.
+		- Tetap informatif dan to the point.
+		- Tidak terlalu panjang, tapi cukup untuk membuat pengguna paham area mana yang perlu ditingkatkan.
+		
+		Contoh gaya penulisan:
+		---
+		
+		**Kekuatan:**
+		- Kamu sudah cukup paham tentang [topik A], terlihat dari jawaban benar di soal [nomor].
+		- Pemahamanmu soal [topik B] juga bagus, lanjutkan ya!
+		
+		**Perlu Ditingkatkan:**
+		- Di soal [nomor], kamu masih keliru memahami [konsep X].
+		  - Saran: Coba ulangi materi tentang [X] dan latihan lagi soal sejenis.
+		- Kamu juga bisa memperdalam topik [Y] agar lebih mantap.
+		
+		**Kesimpulan:**
+		Semangat terus! Belajar itu proses. Jawaban yang salah bukan akhir, tapi langkah menuju paham 💪. Yuk lanjutkan belajarnya!
+		`;
+
+		try {
+			const { text: generatedFeedback } = await generateText({
+				model: openrouter(MISTRAL_NEMO_MODEL),
+				prompt: prompt,
+			});
+
+			// Save feedback to quiz_attempt
+			await ctx.runMutation(
+				internal.internal_quizzes.updateQuizAttemptFeedback,
+				{
+					attemptId: args.attemptId,
+					feedback: generatedFeedback,
+				},
+			);
+
+			return true;
+		} catch (error) {
+			console.error("Failed to generate feedback from AI:", error);
+			throw new Error(`Failed to generate feedback: ${String(error)}`);
 		}
 	},
 });
