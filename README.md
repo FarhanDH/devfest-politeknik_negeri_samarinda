@@ -38,7 +38,6 @@
 - **☁️ Convex** – Backend all-in-one: real-time database, serverless function, dan file storage.
 - **🔑 Clerk** – Otentikasi pengguna modern dan aman, cukup plug & play.
 - **🧹 Biome** – Linter dan formatter untuk menjaga konsistensi kode.
-- **🧪 Vitest** – Framework testing ringan dan cepat.
 - **🔒 T3Env** – Variabel lingkungan yang aman dan type-safe.
 
 ---
