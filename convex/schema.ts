@@ -81,6 +81,55 @@ const schema = defineSchema({
 		.index("by_quiz", ["quizId"])
 		.index("by_user", ["userId"])
 		.index("by_user_quiz", ["userId", "quizId"]),
+
+	quiz_tasks: defineTable({
+		userId: v.id("users"),
+		status: v.union(
+			v.literal("pending"),
+			v.literal("summarizing_content"),
+			v.literal("summary_completed"),
+			v.literal("generating_questions"),
+			v.literal("questions_generated"),
+			v.literal("storing_quiz"),
+			v.literal("completed"),
+			v.literal("failed")
+		),
+		statusMessage: v.optional(v.string()),
+		// Original arguments for the quiz generation
+		contentType: v.union(
+			v.literal("file"),
+			v.literal("url"),
+			v.literal("prompt")
+		),
+		content: v.string(), // file URL, website URL, or text content
+		quizSettings: v.object({
+			difficulty: v.union(
+				v.literal("mix"),
+				v.literal("easy"),
+				v.literal("medium"),
+				v.literal("hard")
+			),
+			questionCount: v.union(
+				v.literal("5"),
+				v.literal("10"),
+				v.literal("15"),
+				v.literal("30")
+			)
+		}),
+		title: v.optional(v.string()), // optional title for text prompts
+
+		// Intermediate results
+		summary: v.optional(v.string()),
+		metadata: v.optional(v.any()), // From summarization steps
+		quizDataFromAI: v.optional(v.any()), // From quizGenerator AI call
+
+		// Final result or error
+		quizId: v.optional(v.id("quizzes")),
+		error: v.optional(v.string()),
+
+		createdAt: v.number(),
+		updatedAt: v.number(),
+	}).index("by_user", ["userId"]),
 });
 
 export default schema;

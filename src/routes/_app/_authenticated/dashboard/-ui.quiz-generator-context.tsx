@@ -2,7 +2,7 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import type { Id } from "@cvx/_generated/dataModel";
 import { type UseQueryResult, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+
 import type { UploadFileResponse } from "@xixixao/uploadstuff";
 import { useAction } from "convex/react";
 import React from "react";
@@ -38,6 +38,7 @@ export interface QuizSettings {
 }
 
 interface QuizGeneratorContextType {
+	activeTaskIds: Id<"quiz_tasks">[];
 	// State
 	sourceContent: SourceContent | null;
 	isProcessing: boolean; // true if processing content (e.g., uploading, fetching metadata)
@@ -57,6 +58,7 @@ interface QuizGeneratorContextType {
 	setIsFocused: (focused: boolean) => void;
 	setPromptText: (text: string) => void;
 	setQuizSettings: (settings: Partial<QuizSettings>) => void;
+	setActiveTaskIds: React.Dispatch<React.SetStateAction<Id<"quiz_tasks">[]>>;
 
 	// Upload actions
 	onUploadBegin: () => void;
@@ -111,6 +113,9 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 		difficulty: "mix",
 		questionCount: "10",
 	});
+	const [activeTaskIds, setActiveTaskIds] = React.useState<Id<"quiz_tasks">[]>(
+		[],
+	);
 
 	// Refs
 	const fileRef = React.useRef<HTMLInputElement>(null);
@@ -118,10 +123,9 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 	const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
 	// Hooks
-	const navigate = useNavigate();
 	const generateUploadUrl = useConvexMutation(api.app.generateUploadUrl);
-	const generateQuizFromContent = useAction(
-		api.quizzes.generateQuizFromContent,
+	const startGenerateQuizWorkflow = useAction(
+		api.quizzes.startGenerateQuizWorkflow,
 	);
 	const deleteFile = useConvexMutation(api.app.deleteFile);
 
@@ -140,6 +144,12 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 
 		setIsProcessing(true);
+
+		console.log({
+			url,
+			sourceContent,
+			result,
+		});
 
 		try {
 			const promise = toast.promise(getWebsiteMetadata(url), {
@@ -211,13 +221,8 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 				title = textPrompt.slice(0, 50) + (textPrompt.length > 50 ? "..." : "");
 			} else if (sourceContent?.type === "file") {
 				// Handle file upload
-				const url = getFileUrl.data;
-				if (!url) {
-					toast.error("File is still uploading, please wait");
-					return;
-				}
 				contentType = "file";
-				content = url;
+				content = sourceContent.id; // Use storageId for file content
 				title = (sourceContent.data as FileMetadata).name;
 			} else if (sourceContent?.type === "url") {
 				// Handle URL
@@ -235,7 +240,7 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 			});
 
 			// Call our orchestrating action
-			const result = await generateQuizFromContent({
+			const taskId = await startGenerateQuizWorkflow({
 				contentType,
 				content,
 				quizSettings,
@@ -246,15 +251,14 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 			toast.dismiss(loadingToast);
 
 			// Show success message
-			toast.success("Quiz generated successfully!", {
-				description: `Created ${result.questionsCount} questions`,
+			toast.success("Quiz generation started!", {
+				description: "You can monitor its progress on the dashboard.",
 			});
 
-			// Navigate to the generated quiz
-			navigate({
-				to: "/quizzes/$quizId",
-				params: { quizId: result.quizId },
-			});
+			// Add task to active tasks
+			if (taskId) {
+				setActiveTaskIds((prev) => [...prev, taskId]);
+			}
 
 			// Clear the form
 			setPromptText("");
@@ -313,6 +317,7 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 		isFocused,
 		promptText,
 		quizSettings,
+		activeTaskIds,
 
 		// Refs
 		fileRef,
@@ -326,6 +331,7 @@ export const QuizGeneratorProvider: React.FC<{ children: React.ReactNode }> = ({
 		setIsFocused,
 		setPromptText,
 		setQuizSettings,
+		setActiveTaskIds, // Added setActiveTaskIds
 
 		// Upload actions
 		onUploadBegin,
