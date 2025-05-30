@@ -14,13 +14,13 @@ import { vv } from "@cvx/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	createFileRoute,
+	Link,
 	notFound,
 	useNavigate,
 } from "@tanstack/react-router";
 import { validate } from "convex-helpers/validators";
 import { ChevronLeft, FileQuestion } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/_authenticated/quizzes/$quizId/")({
 	component: RouteComponent,
@@ -51,6 +51,11 @@ function RouteComponent() {
 		mutationFn: useConvexMutation(api.quizzes.startQuizAttempt),
 	});
 
+	const { mutateAsync: createMultiplayerRoom, isPending: isCreatingRoom } =
+		useMutation({
+			mutationFn: useConvexMutation(api.multiplayer.createRoom),
+		});
+
 	const handleStartSingleQuiz = async () => {
 		try {
 			const attemptId = await startQuizAttempt({ quizId });
@@ -63,6 +68,32 @@ function RouteComponent() {
 		} catch (error) {
 			console.error(error);
 			toast.error("Failed to start quiz attempt");
+		}
+	};
+
+	const handleStartMultiplayerQuiz = async () => {
+		try {
+			toast.loading("Creating multiplayer room...");
+			const result = await createMultiplayerRoom({ quizId });
+			if (result?.roomCode) {
+				toast.dismiss();
+				toast.success("Multiplayer room created!");
+				navigate({
+					to: "/multiplayer/$roomCode",
+					params: { roomCode: result.roomCode },
+				});
+			} else {
+				toast.dismiss();
+				throw new Error("Failed to get room code from server.");
+			}
+		} catch (error) {
+			toast.dismiss();
+			console.error("Failed to create multiplayer room:", error);
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "Failed to create multiplayer room. Please try again.",
+			);
 		}
 	};
 
@@ -94,7 +125,12 @@ function RouteComponent() {
 				</CardContent>
 				<CardFooter className="flex items-center gap-2 flex-col sm:flex-row">
 					<Button onClick={handleStartSingleQuiz}>Start Quiz</Button>
-					<Button>Start with Friend</Button>
+					<Button
+						onClick={handleStartMultiplayerQuiz}
+						disabled={isCreatingRoom}
+					>
+						{isCreatingRoom ? "Creating Room..." : "Start with Friend"}
+					</Button>
 				</CardFooter>
 			</Card>
 		</div>

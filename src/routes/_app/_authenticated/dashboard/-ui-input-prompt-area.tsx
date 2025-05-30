@@ -38,7 +38,7 @@ const QuizSettings: React.FC = () => {
 					<SelectTrigger className="h-8 text-xs border-2 border-border bg-background shadow-sm flex-1 xs:flex-none xs:w-20">
 						<SelectValue />
 					</SelectTrigger>
-					<SelectContent>
+					<SelectContent className="bg-background">
 						<SelectItem value="mix">Mix</SelectItem>
 						<SelectItem value="easy">Easy</SelectItem>
 						<SelectItem value="medium">Medium</SelectItem>
@@ -62,7 +62,7 @@ const QuizSettings: React.FC = () => {
 					<SelectTrigger className="h-8 text-xs border-2 border-border bg-background shadow-sm flex-1 xs:flex-none xs:w-16">
 						<SelectValue />
 					</SelectTrigger>
-					<SelectContent>
+					<SelectContent className="bg-background">
 						<SelectItem value="5">5</SelectItem>
 						<SelectItem value="10">10</SelectItem>
 						<SelectItem value="15">15</SelectItem>
@@ -249,7 +249,7 @@ export const PromptInputArea: React.FC = () => {
 					>
 						<textarea
 							ref={textareaRef}
-							placeholder="What topic would you like to practice today?"
+							placeholder="Topik apa yang ingin kamu latih hari ini?"
 							className="w-full resize-none border-0 bg-transparent p-4 text-sm placeholder-muted-foreground focus:ring-0 focus:outline-none min-h-[100px] font-sans"
 							rows={3}
 							value={promptText}
