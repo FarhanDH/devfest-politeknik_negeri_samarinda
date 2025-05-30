@@ -20,6 +20,7 @@ import { Route as AppAuthenticatedOnboardingLayoutImport } from './routes/_app/_
 import { Route as AppAuthenticatedDashboardLayoutImport } from './routes/_app/_authenticated/dashboard/_layout'
 import { Route as AppAuthenticatedDashboardLayoutIndexImport } from './routes/_app/_authenticated/dashboard/_layout.index'
 import { Route as AppAuthenticatedOnboardingLayoutUsernameImport } from './routes/_app/_authenticated/onboarding/_layout.username'
+import { Route as AppAuthenticatedOnboardingLayoutEducationLevelImport } from './routes/_app/_authenticated/onboarding/_layout.education-level'
 import { Route as AppAuthenticatedDashboardLayoutSettingsImport } from './routes/_app/_authenticated/dashboard/_layout.settings'
 import { Route as AppAuthenticatedDashboardLayoutSettingsIndexImport } from './routes/_app/_authenticated/dashboard/_layout.settings.index'
 
@@ -87,6 +88,13 @@ const AppAuthenticatedOnboardingLayoutUsernameRoute =
   AppAuthenticatedOnboardingLayoutUsernameImport.update({
     id: '/username',
     path: '/username',
+    getParentRoute: () => AppAuthenticatedOnboardingLayoutRoute,
+  } as any)
+
+const AppAuthenticatedOnboardingLayoutEducationLevelRoute =
+  AppAuthenticatedOnboardingLayoutEducationLevelImport.update({
+    id: '/education-level',
+    path: '/education-level',
     getParentRoute: () => AppAuthenticatedOnboardingLayoutRoute,
   } as any)
 
@@ -164,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthenticatedDashboardLayoutSettingsImport
       parentRoute: typeof AppAuthenticatedDashboardLayoutImport
     }
+    '/_app/_authenticated/onboarding/_layout/education-level': {
+      id: '/_app/_authenticated/onboarding/_layout/education-level'
+      path: '/education-level'
+      fullPath: '/onboarding/education-level'
+      preLoaderRoute: typeof AppAuthenticatedOnboardingLayoutEducationLevelImport
+      parentRoute: typeof AppAuthenticatedOnboardingLayoutImport
+    }
     '/_app/_authenticated/onboarding/_layout/username': {
       id: '/_app/_authenticated/onboarding/_layout/username'
       path: '/username'
@@ -239,11 +254,14 @@ const AppAuthenticatedDashboardRouteWithChildren =
   )
 
 interface AppAuthenticatedOnboardingLayoutRouteChildren {
+  AppAuthenticatedOnboardingLayoutEducationLevelRoute: typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   AppAuthenticatedOnboardingLayoutUsernameRoute: typeof AppAuthenticatedOnboardingLayoutUsernameRoute
 }
 
 const AppAuthenticatedOnboardingLayoutRouteChildren: AppAuthenticatedOnboardingLayoutRouteChildren =
   {
+    AppAuthenticatedOnboardingLayoutEducationLevelRoute:
+      AppAuthenticatedOnboardingLayoutEducationLevelRoute,
     AppAuthenticatedOnboardingLayoutUsernameRoute:
       AppAuthenticatedOnboardingLayoutUsernameRoute,
   }
@@ -297,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppAuthenticatedDashboardLayoutRouteWithChildren
   '/onboarding': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
   '/dashboard/settings': typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
+  '/onboarding/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/onboarding/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
   '/dashboard/': typeof AppAuthenticatedDashboardLayoutIndexRoute
   '/dashboard/settings/': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
@@ -307,6 +326,7 @@ export interface FileRoutesByTo {
   '': typeof AppAuthenticatedRouteWithChildren
   '/dashboard': typeof AppAuthenticatedDashboardLayoutIndexRoute
   '/onboarding': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/onboarding/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/onboarding/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
   '/dashboard/settings': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
 }
@@ -321,6 +341,7 @@ export interface FileRoutesById {
   '/_app/_authenticated/onboarding': typeof AppAuthenticatedOnboardingRouteWithChildren
   '/_app/_authenticated/onboarding/_layout': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
   '/_app/_authenticated/dashboard/_layout/settings': typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
+  '/_app/_authenticated/onboarding/_layout/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/_app/_authenticated/onboarding/_layout/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
   '/_app/_authenticated/dashboard/_layout/': typeof AppAuthenticatedDashboardLayoutIndexRoute
   '/_app/_authenticated/dashboard/_layout/settings/': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
@@ -334,6 +355,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/dashboard/settings'
+    | '/onboarding/education-level'
     | '/onboarding/username'
     | '/dashboard/'
     | '/dashboard/settings/'
@@ -343,6 +365,7 @@ export interface FileRouteTypes {
     | ''
     | '/dashboard'
     | '/onboarding'
+    | '/onboarding/education-level'
     | '/onboarding/username'
     | '/dashboard/settings'
   id:
@@ -355,6 +378,7 @@ export interface FileRouteTypes {
     | '/_app/_authenticated/onboarding'
     | '/_app/_authenticated/onboarding/_layout'
     | '/_app/_authenticated/dashboard/_layout/settings'
+    | '/_app/_authenticated/onboarding/_layout/education-level'
     | '/_app/_authenticated/onboarding/_layout/username'
     | '/_app/_authenticated/dashboard/_layout/'
     | '/_app/_authenticated/dashboard/_layout/settings/'
@@ -428,6 +452,7 @@ export const routeTree = rootRoute
       "filePath": "_app/_authenticated/onboarding/_layout.tsx",
       "parent": "/_app/_authenticated/onboarding",
       "children": [
+        "/_app/_authenticated/onboarding/_layout/education-level",
         "/_app/_authenticated/onboarding/_layout/username"
       ]
     },
@@ -437,6 +462,10 @@ export const routeTree = rootRoute
       "children": [
         "/_app/_authenticated/dashboard/_layout/settings/"
       ]
+    },
+    "/_app/_authenticated/onboarding/_layout/education-level": {
+      "filePath": "_app/_authenticated/onboarding/_layout.education-level.tsx",
+      "parent": "/_app/_authenticated/onboarding/_layout"
     },
     "/_app/_authenticated/onboarding/_layout/username": {
       "filePath": "_app/_authenticated/onboarding/_layout.username.tsx",

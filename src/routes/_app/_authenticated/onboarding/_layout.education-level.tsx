@@ -1,5 +1,5 @@
 import { Button } from "@/components/retroui/Button";
-import { Input } from "@/components/retroui/Input";
+import { Select } from "@/components/retroui/Select";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import { useForm } from "@tanstack/react-form";
@@ -10,24 +10,16 @@ import { useEffect } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute(
-	"/_app/_authenticated/onboarding/_layout/username",
+	"/_app/_authenticated/onboarding/_layout/education-level",
 )({
-	component: OnboardingUsername,
-	ssr: true,
+	component: EducationLevelComponent,
 });
 
-export const usernameSchema = z.object({
-	username: z
-		.string()
-		.min(3, "Username harus minimal 3 karakter")
-		.max(20, "Username harus maksimal 20 karakter")
-		.regex(
-			/^[a-zA-Z0-9_]+$/,
-			"Username hanya boleh berisi huruf, angka, dan underscore",
-		),
+export const educationLevelSchema = z.object({
+	educationLevel: z.enum(["sd", "smp", "sma", "kuliah"]),
 });
 
-export default function OnboardingUsername() {
+function EducationLevelComponent() {
 	const navigate = useNavigate();
 	const { data: user } = useQuery(convexQuery(api.users.getCurrentUser, {}));
 
@@ -40,15 +32,15 @@ export default function OnboardingUsername() {
 
 	const form = useForm({
 		defaultValues: {
-			username: "",
+			educationLevel: "sma",
 		},
 		onSubmit: async ({ value }) => {
 			await completeOnboarding({
-				username: value.username,
+				username: "",
 			});
 		},
 		validators: {
-			onChange: usernameSchema,
+			onChange: educationLevelSchema,
 		},
 	});
 
@@ -61,12 +53,12 @@ export default function OnboardingUsername() {
 	return (
 		<div className="mx-auto flex h-full w-full max-w-96 flex-col items-center justify-center gap-6">
 			<div className="flex flex-col items-center gap-2">
-				<span className="mb-2 select-none text-6xl">👋</span>
+				<span className="mb-2 select-none text-6xl">📚</span>
 				<h3 className="text-center text-2xl font-medium text-primary">
-					Selamat datang!
+					Tingkat Pendidikan
 				</h3>
 				<p className="text-center text-base font-normal">
-					Mari kita mulai dengan memilih username.
+					Silakan pilih tingkat pendidikan yang sesuai dengan Anda.
 				</p>
 			</div>
 			<form
@@ -78,43 +70,61 @@ export default function OnboardingUsername() {
 				}}
 			>
 				<div className="flex w-full flex-col gap-1.5">
-					<label htmlFor="username" className="sr-only">
-						Username
+					<label htmlFor="educationLevel" className="sr-only">
+						Tingkat Pendidikan
 					</label>
 					<form.Field
-						name="username"
+						name="educationLevel"
 						children={(field) => (
-							<Input
-								placeholder="Username"
-								autoComplete="off"
-								required
-								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								className={`${
-									field.state.meta?.errors.length > 0 &&
-									"border-destructive focus-visible:ring-destructive"
-								}`}
-							/>
+							// <Input
+							// 	placeholder="Username"
+							// 	autoComplete="off"
+							// 	required
+							// 	value={field.state.value}
+							// 	onBlur={field.handleBlur}
+							// 	onChange={(e) => field.handleChange(e.target.value)}
+							// 	className={`${
+							// 		field.state.meta?.errors.length > 0 &&
+							// 		"border-destructive focus-visible:ring-destructive"
+							// 	}`}
+							// />
+
+							<Select
+								onValueChange={field.handleChange}
+								defaultValue={field.state.value}
+							>
+								<Select.Trigger className="w-full">
+									<Select.Value placeholder="Tingkat Pendidikan" />
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Group>
+										<Select.Item value="sd">SD</Select.Item>
+										<Select.Item value="smp">SMP</Select.Item>
+										<Select.Item value="sma">SMA</Select.Item>
+										<Select.Item value="kuliah">Kuliah</Select.Item>
+									</Select.Group>
+								</Select.Content>
+							</Select>
 						)}
 					/>
 				</div>
 
 				<div className="flex flex-col">
-					{form.state.fieldMeta.username?.errors.length > 0 && (
+					{form.state.fieldMeta.educationLevel?.errors.length > 0 && (
 						<span className="mb-2 text-sm text-destructive">
-							{form.state.fieldMeta.username?.errors[0].message}
+							{form.state.fieldMeta.educationLevel?.errors[0].message}
 						</span>
 					)}
 				</div>
 
 				<Button type="submit" size="sm" className="w-full justify-center">
-					{isPending ? <Loader2 className="animate-spin" /> : "Lanjutkan"}
+					{isPending ? <Loader2 className="animate-spin" /> : "Selanjutnya"}
 				</Button>
 			</form>
 
 			<p className="px-6 text-center text-sm font-normal leading-normal text-muted-foreground">
-				Anda dapat mengupdate username kapan saja dari pengaturan akun Anda.
+				Anda dapat mengubah tingkat pendidikan Anda kapan saja dari pengaturan
+				akun Anda.
 			</p>
 		</div>
 	);
