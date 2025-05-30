@@ -1,6 +1,29 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { type MutationCtx, mutation, query } from "./_generated/server";
+import {
+	type MutationCtx,
+	type QueryCtx,
+	mutation,
+	query,
+} from "./_generated/server";
+
+export const assertUserAuthenticated = async (ctx: QueryCtx | MutationCtx) => {
+	const identity = await ctx.auth.getUserIdentity();
+	if (!identity) {
+		throw new Error("User not authenticated");
+	}
+
+	const user = await ctx.db
+		.query("users")
+		.withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+		.first();
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	return user;
+};
 
 /**
  * Retrieves the currently authenticated user.

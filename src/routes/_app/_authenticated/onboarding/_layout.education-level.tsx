@@ -23,20 +23,25 @@ function EducationLevelComponent() {
 	const navigate = useNavigate();
 	const { data: user } = useQuery(convexQuery(api.users.getCurrentUser, {}));
 
-	const { mutateAsync: completeOnboarding, isPending } = useMutation({
-		mutationFn: useConvexMutation(api.app.completeOnboarding),
-		onSuccess: () => {
-			navigate({ to: "/dashboard" });
-		},
-	});
+	const { mutateAsync: completeOnboardingEducationLevelStep, isPending } =
+		useMutation({
+			mutationFn: useConvexMutation(
+				api.app.completeOnboardingEducationLevelStep,
+			),
+			onSuccess: () => {
+				navigate({ to: "/dashboard" });
+			},
+		});
 
 	const form = useForm({
 		defaultValues: {
 			educationLevel: "sma",
 		},
 		onSubmit: async ({ value }) => {
-			await completeOnboarding({
-				username: "",
+			await completeOnboardingEducationLevelStep({
+				educationLevel: value.educationLevel as z.infer<
+					typeof educationLevelSchema
+				>["educationLevel"],
 			});
 		},
 		validators: {
