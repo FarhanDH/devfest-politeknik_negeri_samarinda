@@ -14,7 +14,7 @@ export function Logo({ width, height, className, ...args }: LogoProps) {
 			width={width ?? 40}
 			height={height ?? 40}
 			xmlns="http://www.w3.org/2000/svg"
-			className={cn(`text-primary ${className}`)}
+			className={cn(`text-foreground ${className}`)}
 			viewBox="0 0 24 24"
 			fill="none"
 		>

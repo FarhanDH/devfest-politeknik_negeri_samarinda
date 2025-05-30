@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/retroui/Button";
 import { Logo } from "@/components/ui/logo";
 import { SignInButton } from "@clerk/clerk-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -35,14 +35,16 @@ function Index() {
 					</Unauthenticated>
 
 					<Authenticated>
+						<Button size={"sm"} disabled={isLoading} >
 						<Link
 							to={"/dashboard"}
-							className={buttonVariants({ size: "sm" })}
+							// className={buttonVariants({ size: "sm" })}
 							disabled={isLoading}
 						>
 							{isLoading && <Loader2 className="animate-spin w-16 h-4" />}
 							{!isLoading && isAuthenticated && "Dashboard"}
 						</Link>
+						</Button>
 					</Authenticated>
 				</div>
 			</div>
