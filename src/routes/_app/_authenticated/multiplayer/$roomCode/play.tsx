@@ -1,7 +1,7 @@
-import { Avatar } from "@/components/retroui/Avatar"; // Import Avatar
-import { Card } from "@/components/retroui/Card"; // Corrected Card import
+import { Avatar } from "@/components/retroui/Avatar";
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
-import { Button } from "@/components/ui/button";
 import { api } from "@cvx/_generated/api";
 import type { Id } from "@cvx/_generated/dataModel"; // Use type-only import
 import {
@@ -148,25 +148,24 @@ function MultiplayerQuizPlayPage() {
 
 	if (playDataQuery === undefined) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-purple-600 to-blue-500 text-white">
-				<Loader2 className="w-16 h-16 animate-spin mb-4" />
-				<Text as="h2">Loading Quiz Arena...</Text>
+			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--background)] text-[var(--foreground)]">
+				<Loader2 className="h-16 w-16 animate-spin text-[var(--primary)] mb-4" />
+				<Text as="p" className="text-xl">Loading Quiz Arena...</Text>
 			</div>
 		);
 	}
 
 	if (playDataQuery === null || playDataQuery.error) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-red-500 text-white">
+			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--background)] text-[var(--destructive)]">
 				<AlertTriangle className="w-16 h-16 mb-4" />
-				<Text as="h2">Error Loading Quiz</Text>
-				<Text className="mt-2 text-center">
+				<Text as="h2" className="text-2xl font-bold" style={{ textShadow: '0 0 5px var(--destructive), 0 0 10px var(--destructive)' }}>Error Loading Quiz</Text>
+				<Text as="p" className="text-center mb-6">
 					{playDataQuery?.error ||
-						"Could not load quiz data. Is the room code correct?"}
+						"Could not load quiz data. Please try again."}
 				</Text>
 				<Button
 					onClick={() => navigate({ to: "/dashboard", replace: true })}
-					className="mt-6 bg-white text-red-500 hover:bg-red-100"
 				>
 					<ArrowLeft className="mr-2 h-4 w-4" /> Go to Dashboard
 				</Button>
@@ -239,38 +238,36 @@ function MultiplayerQuizPlayPage() {
 	}
 
 	const isAnswered = currentPlayer.hasAnsweredCurrentQuestion;
-	const getPlayerInitials = (name: string) =>
-		name
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
 
+	const getPlayerInitials = (name: string) => {
+		if (!name) return "P";
+		return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+	};
+
+	// Main component rendering
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-600 flex flex-col lg:flex-row items-start justify-center p-4 gap-6 selection:bg-purple-300 selection:text-purple-900">
-			{/* Main Quiz Card */}
-			<Card className="w-full lg:flex-1 max-w-2xl shadow-2xl bg-white/90 backdrop-blur-sm rounded-xl overflow-hidden self-center lg:self-start mt-8 lg:mt-0">
-				<Card.Header className="bg-black/50 text-white p-6">
-					<div className="flex justify-between items-center mb-2">
-						<Text as="p" className="text-purple-300">
-							Multiplayer Quiz: {quiz.title}
-						</Text>
-						<Text
-							as="p"
-							className={`px-3 py-1 rounded-md font-semibold ${timeLeft !== null && timeLeft <= 5 ? "bg-red-500 text-white animate-pulse" : "bg-yellow-400 text-yellow-900"}`}
-						>
-							Time Left: {timeLeft === null ? "..." : timeLeft}s
-						</Text>
+		<div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-[var(--font-sans)] flex flex-col lg:flex-row lg:items-start lg:justify-center gap-6 p-4 md:p-8 pb-20 overflow-hidden">
+			{/* Quiz Card */}
+			<Card className="w-full lg:w-[600px] shadow-[var(--shadow-xl)] border-2 border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)]">
+				<Card.Header className="flex flex-col items-center">
+					<Text as="h2" className="text-2xl font-bold" style={{ textShadow: '0 0 5px var(--primary), 0 0 10px var(--primary)' }}>
+						{quiz.title}
+					</Text>
+					<div className="flex items-center justify-center space-x-2 text-sm mt-2">
+						<span className="bg-[var(--primary)]/20 text-[var(--primary-foreground)] px-2 py-1 rounded-full border border-[var(--border)] shadow-[var(--shadow-xs)]">
+							Question {currentQuestionIndex + 1} of {quiz.questions.length}
+						</span>
+						{timeLeft !== null && (
+							<span
+								className={`px-2 py-1 rounded-full border border-[var(--border)] shadow-[var(--shadow-xs)] ${timeLeft > 10 ? "bg-[var(--accent)]/20 text-[var(--accent-foreground)]" : timeLeft > 5 ? "bg-[var(--primary)]/20 text-[var(--primary-foreground)]" : "bg-[var(--destructive)]/20 text-[var(--destructive-foreground)]"}`}
+							>
+								{timeLeft}s remaining
+							</span>
+						)}
 					</div>
-					<Card.Title className="text-2xl md:text-3xl !font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400">
-						Question {currentQuestionIndex + 1} of {quiz.questions.length}
-					</Card.Title>
-					<Card.Description className="text-purple-200 mt-1">
-						{currentQuestion.question}
-					</Card.Description>
 				</Card.Header>
 				<Card.Content className="p-6 md:p-8">
+					<Text as="p" className="text-lg mb-4">{currentQuestion.question}</Text>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{currentQuestion.options.map((option: string, index: number) => {
 							const isCorrectAnswer =
@@ -278,17 +275,15 @@ function MultiplayerQuizPlayPage() {
 								index;
 							const isSelectedAnswer = selectedAnswerIndex === index;
 
-							let buttonStyle =
-								"bg-white/80 hover:bg-purple-100 border-purple-300 text-purple-800";
+							let buttonStyle = "";
 							if (isAnswered) {
 								if (isCorrectAnswer) {
-									buttonStyle = "!bg-green-500 !text-white border-green-700";
+									buttonStyle = "bg-[var(--accent)] text-[var(--accent-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
 								} else if (isSelectedAnswer) {
-									buttonStyle = "!bg-red-500 !text-white border-red-700";
+									buttonStyle = "bg-[var(--destructive)] text-[var(--destructive-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
 								}
 							} else if (isSelectedAnswer) {
-								buttonStyle =
-									"bg-purple-500 text-white border-purple-700 ring-2 ring-purple-300";
+								buttonStyle = "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
 							}
 
 							return (
@@ -297,8 +292,7 @@ function MultiplayerQuizPlayPage() {
 									variant="outline"
 									onClick={() => handleAnswerSelect(index)}
 									disabled={isAnswered || isSubmitting || timeLeft === 0}
-									className={`p-4 h-auto text-left justify-start transition-all duration-200 ease-in-out transform hover:scale-105 
-                              ${buttonStyle}
+									className={`p-4 h-auto text-left justify-start transition-all duration-200 ease-in-out hover:translate-y-1 ${buttonStyle}
                               disabled:opacity-70 disabled:transform-none disabled:cursor-not-allowed 
                             `}
 								>
@@ -316,7 +310,7 @@ function MultiplayerQuizPlayPage() {
 						})}
 					</div>
 				</Card.Content>
-				<div className="p-6 bg-black/10 flex flex-col items-center">
+				<Card.Content className="border-t-2 border-dashed border-[var(--muted)] pt-6 flex flex-col items-center">
 					{isAnswered ? (
 						<div className="text-center">
 							<Text
@@ -324,8 +318,8 @@ function MultiplayerQuizPlayPage() {
 								className={
 									quiz.questions[currentQuestionIndex].correctOptionIndex ===
 									selectedAnswerIndex
-										? "text-green-600"
-										: "text-red-600"
+										? "text-[var(--accent)]"
+										: "text-[var(--destructive)]"
 								}
 							>
 								{selectedAnswerIndex !== null &&
@@ -335,7 +329,7 @@ function MultiplayerQuizPlayPage() {
 										: "Incorrect.")}
 								{selectedAnswerIndex === null && "You didn't select an answer."}
 							</Text>
-							<Text as="p" className="mt-1 text-gray-700">
+							<Text as="p" className="mt-1 text-[var(--muted-foreground)]">
 								Waiting for other players or next question...
 							</Text>
 						</div>
@@ -345,7 +339,7 @@ function MultiplayerQuizPlayPage() {
 							disabled={
 								selectedAnswerIndex === null || isSubmitting || timeLeft === 0
 							}
-							className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-150 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+							className="w-full md:w-auto"
 						>
 							{isSubmitting ? (
 								<Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -354,62 +348,62 @@ function MultiplayerQuizPlayPage() {
 						</Button>
 					)}
 					{timeLeft === 0 && !isAnswered && (
-						<Text as="p" className="mt-3 text-red-600 font-medium">
+						<Text as="p" className="mt-3 text-[var(--destructive)]">
 							Time's up! Your answer was not submitted.
 						</Text>
 					)}
-				</div>
+				</Card.Content>
 			</Card>
 
 			{/* Scoreboard Card */}
-			<Card className="w-full lg:w-80 shadow-xl bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden self-center lg:self-start mt-8 lg:mt-0">
-				<Card.Header className="bg-black/40 text-white p-4">
-					<Card.Title className="text-xl !font-semibold text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400">
+			<Card className="w-full lg:w-80 shadow-[var(--shadow-xl)] border-2 border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] self-center lg:self-start mt-8 lg:mt-0">
+				<Card.Header>
+					<Text as="h3" className="text-xl font-bold text-center" style={{ textShadow: '0 0 5px var(--primary), 0 0 10px var(--primary)' }}>
 						Live Scores
-					</Card.Title>
+					</Text>
 				</Card.Header>
 				<Card.Content className="p-4 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
 					{allPlayers.map((player, idx) => (
 						<div
 							key={player.userId}
-							className={`flex items-center p-3 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md 
-                        ${player.userId === currentPlayer.userId ? "bg-purple-200 border-2 border-purple-500" : "bg-white/70"}
+							className={`flex items-center p-3 rounded-md transition-all duration-300 shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-sm)] border border-[var(--border)]
+                        ${player.userId === currentPlayer.userId ? "bg-[var(--primary)]/20 border-2 border-[var(--primary)]" : "bg-[var(--background)]"}
                         ${player.hasAnsweredCurrentQuestion ? "opacity-100" : "opacity-70"}`}
 						>
 							<Text
 								as="p"
-								className={`mr-3 font-bold text-lg ${player.userId === currentPlayer.userId ? "text-purple-700" : "text-gray-700"}`}
+								className={`mr-3 text-lg ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}
 							>
 								{idx + 1}.
 							</Text>
-							<Avatar className="h-10 w-10 mr-3 border-purple-400">
+							<Avatar className="h-10 w-10 mr-3 border border-[var(--border)]">
 								<Avatar.Image
 									src={player.profileImage || undefined}
 									alt={player.username}
 								/>
-								<Avatar.Fallback className="bg-purple-500 text-white text-sm">
+								<Avatar.Fallback className="bg-[var(--primary)] text-[var(--primary-foreground)] text-sm">
 									{getPlayerInitials(player.username)}
 								</Avatar.Fallback>
 							</Avatar>
 							<div className="flex-grow">
 								<Text
 									as="p"
-									className={`font-semibold truncate ${player.userId === currentPlayer.userId ? "text-purple-800" : "text-gray-800"}`}
+									className={`truncate ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}
 								>
 									{player.username}{" "}
 									{player.isHost && (
-										<Crown className="inline h-4 w-4 ml-1 text-yellow-500" />
+										<Crown className="inline h-4 w-4 ml-1 text-[var(--accent)]" />
 									)}
 								</Text>
 								<Text
 									as="p"
-									className={`text-sm ${player.userId === currentPlayer.userId ? "text-purple-600" : "text-gray-600"}`}
+									className={`text-sm ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]"}`}
 								>
 									Score: {player.score}
 								</Text>
 							</div>
 							{player.hasAnsweredCurrentQuestion && (
-								<CheckCircle className="h-5 w-5 text-green-500 ml-2 flex-shrink-0" />
+								<CheckCircle className="h-5 w-5 text-[var(--accent)] ml-2 flex-shrink-0" />
 							)}
 						</div>
 					))}
@@ -419,7 +413,7 @@ function MultiplayerQuizPlayPage() {
 			<Button
 				variant="outline"
 				onClick={() => navigate({ to: "/dashboard", replace: true })}
-				className="fixed bottom-4 left-4 bg-white/20 text-white hover:bg-white/30 border-white/50"
+				className="fixed bottom-4 left-4 bg-[var(--background)]/80 text-[var(--foreground)] hover:bg-[var(--background)] border border-[var(--border)] shadow-[var(--shadow-sm)]"
 			>
 				<ArrowLeft className="mr-2 h-4 w-4" /> Leave Quiz
 			</Button>

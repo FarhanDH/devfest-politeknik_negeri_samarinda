@@ -60,20 +60,13 @@ function RouteComponent() {
 
 	return (
 		<>
-			<HeaderConfiguration
-				headerTitle="Leaderboard"
-				headerDescription="Lihat peringkat teratas pengguna berdasarkan skor quiz mereka dan raih posisi terbaik di leaderboard!"
-			/>
+			<HeaderConfiguration isVisible={false} />
 			<div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-[var(--font-sans)] p-4 md:p-8 flex flex-col items-center">
 				<Card className="w-full max-w-2xl block border-[var(--border)] shadow-[var(--shadow-xl)]">
 					<Card.Header className="pb-4 md:pb-6">
 						<Text
 							as="h1"
 							className="text-center font-[var(--font-head)] text-4xl md:text-5xl"
-							style={{
-								textShadow:
-									"0 0 5px var(--primary), 0 0 10px var(--primary), 0 0 15px var(--primary)",
-							}}
 						>
 							LEADERBOARD
 						</Text>
@@ -138,9 +131,6 @@ function RouteComponent() {
 						<Text
 							as="h2"
 							className="text-center font-[var(--font-head)] text-2xl md:text-3xl mb-6"
-							style={{
-								textShadow: "0 0 5px var(--primary), 0 0 10px var(--primary)",
-							}}
 						>
 							YOUR STATS
 						</Text>

@@ -171,11 +171,6 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground" />
 							</DropdownMenuItem>
 
-							{/* <DropdownMenuItem className="flex h-9 items-center justify-between rounded-md px-2">
-								<span className="text-sm text-foreground">Theme</span>
-								<ThemeSwitcher />
-							</DropdownMenuItem> */}
-
 							<DropdownMenuSeparator className="mx-0 my-2 h-[1px] bg-border" />
 
 							<SignOutButton redirectUrl="/">
@@ -188,43 +183,6 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 					</DropdownMenu>
 				</div>
 			</div>
-
-			{/* <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
-				<div
-					className={cn(
-						"flex h-12 items-center border-b-2",
-						isDashboardPath ? "border-primary" : "border-transparent",
-					)}
-				>
-					<Link to={"/dashboard"}>
-						<Button
-							variant={"link"}
-							className={cn("hover:no-underline text-foreground", {
-								"text-primary": isDashboardPath,
-							})}
-						>
-							Dashboard
-						</Button>
-					</Link>
-				</div>
-				<div
-					className={cn(
-						"flex h-12 items-center border-b-2",
-						isSettingsPath ? "border-primary" : "border-transparent",
-					)}
-				>
-					<Link to={"/dashboard/settings"}>
-						<Button
-							variant={"link"}
-							className={cn("hover:no-underline text-foreground", {
-								"text-primary": isSettingsPath,
-							})}
-						>
-							Settings
-						</Button>
-					</Link>
-				</div>
-			</div> */}
 		</nav>
 	);
 }

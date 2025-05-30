@@ -1,14 +1,7 @@
 import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
+import { Text } from "@/components/retroui/Text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge"; // Assuming Badge component exists
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import type { Id } from "@cvx/_generated/dataModel"; // Adjusted to 'import type { Id }'
@@ -83,24 +76,24 @@ function RouteComponent() {
 
 	if (isLoadingLobby) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-screen">
-				<Loader2 className="h-12 w-12 animate-spin text-primary" />
-				<p className="mt-4 text-lg">Loading Room...</p>
+			<div className="flex flex-col items-center justify-center min-h-screen bg-[var(--background)]">
+				<Loader2 className="h-12 w-12 animate-spin text-[var(--primary)]" />
+				<Text as="p" className="mt-4 text-lg">Loading Room...</Text>
 			</div>
 		);
 	}
 
 	if (lobbyError || !lobbyData) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-screen p-4">
-				<p className="text-2xl font-semibold text-destructive mb-4">
+			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--background)]">
+				<Text as="h2" className="text-2xl font-semibold text-[var(--destructive)] mb-4">
 					{lobbyError ? "Error loading room" : "Room not found"}
-				</p>
-				<p className="text-muted-foreground mb-6 text-center">
+				</Text>
+				<Text as="p" className="text-[var(--muted-foreground)] mb-6 text-center">
 					{lobbyError
 						? lobbyError.message
 						: `The room code "${roomCode.toUpperCase()}" might be invalid or the room may have expired.`}
-				</p>
+				</Text>
 
 				<Link to="/dashboard">
 					<Button>Go to Dashboard</Button>
@@ -111,86 +104,88 @@ function RouteComponent() {
 
 	const isHost = lobbyData.hostId === currentUser?._id;
 	return (
-		<div className="container mx-auto max-w-2xl py-8 px-4 min-h-screen flex flex-col">
+		<div className="container mx-auto max-w-2xl py-8 px-4 min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] font-[var(--font-sans)]">
 			<Link
 				to="/dashboard"
-				className="absolute top-4 left-4 text-muted-foreground hover:text-foreground"
+				className="absolute top-4 left-4 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
 			>
 				<ChevronLeft size={24} />
 			</Link>
 
-			<Card className="w-full shadow-xl flex-grow flex flex-col">
-				<CardHeader className="text-center">
-					<CardTitle className="text-3xl font-bold">
+			<Card className="w-full shadow-[var(--shadow-xl)] border-2 border-[var(--border)] flex-grow flex flex-col bg-[var(--card)] text-[var(--card-foreground)]">
+				<Card.Header className="text-center">
+					<Text as="h1" className="text-3xl font-[var(--font-head)]" style={{ textShadow: '0 0 5px var(--primary), 0 0 10px var(--primary)' }}>
 						Multiplayer Lobby
-					</CardTitle>
-					<CardDescription>
+					</Text>
+					<Text as="p" className="text-[var(--muted-foreground)]">
 						Get ready to challenge your friends!
-					</CardDescription>
+					</Text>
 					<div className="mt-4">
-						<p className="text-sm text-muted-foreground">ROOM CODE:</p>
-						<Badge
-							variant="secondary"
-							className="text-2xl font-mono tracking-widest p-3 cursor-pointer"
+						<Text as="p" className="text-sm text-[var(--muted-foreground)]">ROOM CODE:</Text>
+						<Button 
+							variant="outline"
+							className="inline-block text-2xl font-mono tracking-widest p-3 bg-[var(--secondary)] text-[var(--secondary-foreground)] border-2 border-[var(--border)] shadow-[var(--shadow-sm)]"
 							onClick={copyRoomCode}
+							aria-label="Copy room code"
 						>
 							{lobbyData.code}
-							<Copy size={18} className="ml-3" />
-						</Badge>
+							<Copy size={18} className="ml-3 inline" />
+						</Button>
 					</div>
-				</CardHeader>
+				</Card.Header>
 
-				<CardContent className="flex-grow space-y-6">
+				<Card.Content className="flex-grow space-y-6">
 					<div className="text-center">
-						<h3 className="text-xl font-semibold">{lobbyData.quiz.title}</h3>
-						<p className="text-sm text-muted-foreground">
+						<Text as="h3" className="text-xl font-[var(--font-head)]">{lobbyData.quiz.title}</Text>
+						<Text as="p" className="text-sm text-[var(--muted-foreground)]">
 							{lobbyData.quiz.description}
-						</p>
-						<p className="text-sm text-muted-foreground">
+						</Text>
+						<Text as="p" className="text-sm text-[var(--muted-foreground)]">
 							{lobbyData.quiz.questionCount} Questions
-						</p>
+						</Text>
 					</div>
 
 					<div>
-						<h4 className="text-lg font-semibold mb-3 flex items-center">
-							<Users size={20} className="mr-2" /> Participants (
+						<Text as="h4" className="text-lg mb-3 flex items-center font-[var(--font-head)]">
+							<Users size={20} className="mr-2 text-[var(--primary)]" /> Participants (
 							{lobbyData.players.length})
-						</h4>
-						<ul className="space-y-3 max-h-60 overflow-y-auto bg-muted/50 p-3 rounded-md">
+						</Text>
+						<ul className="space-y-3 max-h-60 overflow-y-auto bg-[var(--muted)]/20 p-3 rounded-md border-2 border-[var(--border)] shadow-[var(--shadow-sm)]">
 							{lobbyData.players.map((player) => (
 								<li
 									key={player.userId}
-									className="flex items-center justify-between p-2 bg-background rounded-md shadow-sm"
+									className="flex items-center justify-between p-2 bg-[var(--background)] rounded-md shadow-[var(--shadow-xs)] border border-[var(--border)]"
 								>
 									<div className="flex items-center">
-										<Avatar className="h-8 w-8 mr-3">
+										<Avatar className="h-8 w-8 mr-3 border border-[var(--primary)]">
 											<AvatarImage
 												src={player.profileImage}
 												alt={player.username}
 											/>
-											<AvatarFallback>
+											<AvatarFallback className="bg-[var(--primary)] text-[var(--primary-foreground)]">
 												{player.username?.substring(0, 2).toUpperCase()}
 											</AvatarFallback>
 										</Avatar>
-										<span className="font-medium">{player.username}</span>
+										<Text as="span" className="font-medium">{player.username}</Text>
 									</div>
 									{player.userId === lobbyData.hostId && (
-										<Badge variant="outline" className="text-xs">
+										<div className="text-xs px-2 py-1 rounded-md bg-[var(--accent)] text-[var(--accent-foreground)] border border-[var(--border)] shadow-[var(--shadow-xs)]">
 											Host
-										</Badge>
+										</div>
 									)}
 								</li>
 							))}
 						</ul>
 					</div>
-				</CardContent>
+				</Card.Content>
 
-				<CardFooter className="mt-auto">
+				<Card.Content className="mt-auto pt-6 border-t-2 border-dashed border-[var(--muted)]">
 					{isHost && lobbyData.status === "waiting" && (
 						<div className="flex w-full items-center justify-center gap-2">
 							<Button
-								className="bg-destructive text-white hover:bg-destructive/90"
+								variant="secondary"
 								size={"icon"}
+								className="bg-[var(--destructive)] text-[var(--destructive-foreground)] hover:bg-[var(--destructive)]/90"
 							>
 								<Trash />
 							</Button>
@@ -216,17 +211,19 @@ function RouteComponent() {
 						</div>
 					)}
 					{lobbyData.status === "active" && (
-						<p className="text-center w-full text-green-500 font-semibold">
+						<Text as="p" className="text-center w-full text-[var(--accent)] font-semibold">
 							Quiz is active! Redirecting...
-						</p>
+						</Text>
 					)}
 					{lobbyData.status === "finished" && (
-						<p className="text-center w-full text-blue-500 font-semibold">
-							This quiz has finished.
-						</p>
-						// TODO: Add button to view results
+						<>
+							<Text as="p" className="text-center w-full text-[var(--primary)] font-semibold">
+								This quiz has finished.
+							</Text>
+							{/* TODO: Add button to view results */}
+						</>
 					)}
-				</CardFooter>
+				</Card.Content>
 			</Card>
 		</div>
 	);

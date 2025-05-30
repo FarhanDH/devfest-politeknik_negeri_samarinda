@@ -1,3 +1,4 @@
+import { Progress } from "@/components/retroui/Progress";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -7,7 +8,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import type { Id } from "@cvx/_generated/dataModel";
@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 interface QuizResultProps {
 	quizId: Id<"quizzes">;
 	attemptId: string;
-};
+}
 
 export const Route = createFileRoute(
 	"/_app/_authenticated/quizzes/$quizId/result",
@@ -48,20 +48,29 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 
 	// Fetch attempt data
 	const { data: attempt, isLoading: isAttemptLoading } = useQuery(
-		convexQuery(api.quizzes.getQuizAttempt, { attemptId: attemptId as Id<"quiz_attempts"> })
+		convexQuery(api.quizzes.getQuizAttempt, {
+			attemptId: attemptId as Id<"quiz_attempts">,
+		}),
 	);
-	
+
 	// Log the attempt data for debugging
 	useEffect(() => {
-		console.log("Attempt data in result page:", { attemptId, attempt, isAttemptLoading });
+		console.log("Attempt data in result page:", {
+			attemptId,
+			attempt,
+			isAttemptLoading,
+		});
 	}, [attemptId, attempt, isAttemptLoading]);
 
 	// Calculate total time taken
 	useEffect(() => {
 		if (attempt?.questionAnswers) {
-			const totalTime = attempt.questionAnswers.reduce((acc: number, answer: { timeTaken: number }) => {
-				return acc + answer.timeTaken;
-			}, 0);
+			const totalTime = attempt.questionAnswers.reduce(
+				(acc: number, answer: { timeTaken: number }) => {
+					return acc + answer.timeTaken;
+				},
+				0,
+			);
 			setTotalTimeTaken(totalTime);
 		}
 	}, [attempt]);
@@ -103,7 +112,8 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					<CardContent>
 						<p>We couldn't find the results for this quiz attempt.</p>
 						<p className="text-sm text-gray-500 mt-2">
-							Debug info: Quiz ID: {quizId.toString()}, Attempt ID: {attemptId.toString()}
+							Debug info: Quiz ID: {quizId.toString()}, Attempt ID:{" "}
+							{attemptId.toString()}
 						</p>
 						<Button
 							className="mt-4"
@@ -117,7 +127,9 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 		);
 	}
 
-	const correctAnswers = attempt.questionAnswers.filter((a) => a.isCorrect).length;
+	const correctAnswers = attempt.questionAnswers.filter(
+		(a) => a.isCorrect,
+	).length;
 	const totalQuestions = quiz.questions.length;
 	const percentage = Math.round((correctAnswers / totalQuestions) * 100);
 
@@ -296,7 +308,8 @@ function RouteComponent() {
 					<CardContent>
 						<p>No quiz attempt was specified. Please try again.</p>
 						<p className="text-sm text-gray-500 mt-2">
-							Debug info: Quiz ID: {quizId}, Search params: {JSON.stringify(searchParams)}
+							Debug info: Quiz ID: {quizId}, Search params:{" "}
+							{JSON.stringify(searchParams)}
 						</p>
 						<Button className="mt-4" onClick={() => window.history.back()}>
 							Go Back
@@ -308,5 +321,10 @@ function RouteComponent() {
 	}
 
 	// Ensure attemptId is properly cast as an Id<"quiz_attempts">
-	return <QuizResult quizId={quizId as Id<"quizzes">} attemptId={attemptId as Id<"quiz_attempts">} />;
+	return (
+		<QuizResult
+			quizId={quizId as Id<"quizzes">}
+			attemptId={attemptId as Id<"quiz_attempts">}
+		/>
+	);
 }
