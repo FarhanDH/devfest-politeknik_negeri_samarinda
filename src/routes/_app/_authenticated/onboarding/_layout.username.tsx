@@ -31,19 +31,20 @@ export default function OnboardingUsername() {
 	const navigate = useNavigate();
 	const { data: user } = useQuery(convexQuery(api.users.getCurrentUser, {}));
 
-	const { mutateAsync: completeOnboarding, isPending } = useMutation({
-		mutationFn: useConvexMutation(api.app.completeOnboarding),
-		onSuccess: () => {
-			navigate({ to: "/dashboard" });
-		},
-	});
+	const { mutateAsync: completeOnboardingUsernameStep, isPending } =
+		useMutation({
+			mutationFn: useConvexMutation(api.app.completeOnboardingUsernameStep),
+			onSuccess: () => {
+				navigate({ to: "/onboarding/education-level" });
+			},
+		});
 
 	const form = useForm({
 		defaultValues: {
 			username: "",
 		},
 		onSubmit: async ({ value }) => {
-			await completeOnboarding({
+			await completeOnboardingUsernameStep({
 				username: value.username,
 			});
 		},

@@ -9,18 +9,11 @@ import { createOrUpdateUser } from "./users";
  * @returns The created or updated user object.
  * @throws Error if the user is not authenticated or if user creation fails.
  */
-export const completeOnboarding = mutation({
+export const completeOnboardingUsernameStep = mutation({
 	args: {
 		username: v.string(),
-		education_level: v.optional(
-			v.union(
-				v.literal("sd"),
-				v.literal("smp"),
-				v.literal("sma"),
-				v.literal("kuliah"),
-			),
-		),
 	},
+
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) {
@@ -30,16 +23,48 @@ export const completeOnboarding = mutation({
 		const user = await createOrUpdateUser(ctx, identity.subject, {
 			username: args.username,
 			email: identity.email as string,
-			alreadyOnboarded: true,
 			profileImage: identity.pictureUrl || "",
 			userId: identity.subject,
+			alreadyOnboarded: false,
 			exp: identity.exp ? Number(identity.exp) : 0,
-			education_level: args.education_level, // Default value, can be changed later
 		});
 
 		if (!user) {
 			throw new Error("Failed to create user");
 		}
+
+		return user;
+	},
+});
+
+export const completeOnboardingEducationLevelStep = mutation({
+	args: {
+		educationLevel: v.union(
+			v.literal("sd"),
+			v.literal("smp"),
+			v.literal("sma"),
+			v.literal("kuliah"),
+		),
+	},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new Error("User not authenticated");
+		}
+
+		const user = await ctx.db
+			.query("users")
+			.withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+			.first();
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		await ctx.db.patch(user._id, {
+			alreadyOnboarded: true,
+			education_level: args.educationLevel,
+		});
 
 		return user;
 	},
@@ -59,6 +84,70 @@ export const generateUploadUrl = mutation({
 			throw new Error("User not found");
 		}
 		return await ctx.storage.generateUploadUrl();
+	},
+});
+
+// Get a URL to download an uploaded file with proper content type
+export const getFileUrl = query({
+	args: {
+		storageId: v.string(),
+		contentType: v.optional(v.string()),
+	},
+	handler: async (ctx, args) => {
+		console.log(`[getFileUrl] Getting URL for storage ID: ${args.storageId}`);
+
+		try {
+			// Try to determine content type from the storageId or provided parameter
+			let imageContentType = args.contentType || "image/png";
+
+			// Check the storage ID for file extension clues
+			const storageId = args.storageId;
+			if (storageId.includes(".jpg") || storageId.includes(".jpeg")) {
+				imageContentType = "image/jpeg";
+			} else if (storageId.includes(".svg")) {
+				imageContentType = "image/svg+xml";
+			} else if (storageId.includes(".png")) {
+				imageContentType = "image/png";
+			}
+
+			console.log(`[getFileUrl] Using content type: ${imageContentType}`);
+
+			// Get URL from storage
+			// Unfortunately, Convex storage.getUrl() doesn't accept content type parameters
+			// But we're logging this information for debugging purposes
+			const url = await ctx.storage.getUrl(args.storageId);
+
+			if (!url) {
+				console.log(
+					`[getFileUrl] Failed to get URL for storage ID: ${args.storageId}`,
+				);
+				return null;
+			}
+
+			console.log(`[getFileUrl] Generated URL: ${url}`);
+			return url;
+		} catch (error) {
+			console.error("[getFileUrl] Error getting URL:", error);
+			return null;
+		}
+	},
+});
+
+export const deleteFile = mutation({
+	args: {
+		storageId: v.id("_storage"),
+	},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new Error("User not found");
+		}
+
+		const file = await ctx.db.system.get(args.storageId);
+		if (!file) {
+			throw new Error("File not found");
+		}
+		await ctx.storage.delete(args.storageId);
 	},
 });
 

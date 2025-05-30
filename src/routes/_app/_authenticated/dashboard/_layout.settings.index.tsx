@@ -1,6 +1,6 @@
 import { HeaderConfiguration } from "@/components/header-provider";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/retroui/Button";
+import { Input } from "@/components/retroui/Input";
 import { useDoubleCheck } from "@/components/ui/use-double-check";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
@@ -102,29 +102,29 @@ export default function DashboardSettings() {
 			/>
 			<div className="flex h-full w-full flex-col gap-6">
 				{/* Avatar */}
-				<div className="flex w-full flex-col items-start rounded-lg border border-border bg-card">
-					<div className="flex w-full items-start justify-between rounded-lg p-6">
+				<div className="flex w-full flex-col items-start border-2 border-border bg-card shadow-md">
+					<div className="flex w-full items-start justify-between p-6">
 						<div className="flex flex-col gap-2">
-							<h2 className="text-xl font-medium text-primary">Your Avatar</h2>
-							<p className="text-sm font-normal text-primary/60">
+							<h2 className="text-xl font-bold text-foreground">Your Avatar</h2>
+							<p className="text-sm font-normal text-muted-foreground">
 								This is your avatar. It will be displayed on your profile.
 							</p>
 						</div>
 						<label
 							htmlFor="avatar_field"
-							className="group relative flex cursor-pointer overflow-hidden rounded-full transition active:scale-95"
+							className="group relative flex cursor-pointer overflow-hidden border-2 border-border shadow-sm transition active:scale-95"
 						>
 							{user.profileImage ? (
 								<img
 									src={user.profileImage}
-									className="h-20 w-20 rounded-full object-cover"
+									className="h-20 w-20 object-cover"
 									alt={user.username ?? user.email}
 								/>
 							) : (
-								<div className="h-20 w-20 rounded-full bg-gradient-to-br from-lime-400 from-10% via-cyan-300 to-blue-500" />
+								<div className="h-20 w-20 bg-gradient-to-br from-primary via-accent to-secondary" />
 							)}
-							<div className="absolute z-10 hidden h-full w-full items-center justify-center bg-primary/40 group-hover:flex">
-								<Upload className="h-6 w-6 text-secondary" />
+							<div className="absolute z-10 hidden h-full w-full items-center justify-center bg-primary/80 group-hover:flex">
+								<Upload className="h-6 w-6 text-primary-foreground" />
 							</div>
 						</label>
 						<input
@@ -147,8 +147,8 @@ export default function DashboardSettings() {
 							}}
 						/>
 					</div>
-					<div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-						<p className="text-sm font-normal text-primary/60">
+					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-border bg-secondary px-6">
+						<p className="text-sm font-normal text-secondary-foreground">
 							Click on the avatar to upload a custom one from your files.
 						</p>
 						{user.profileImage && (
@@ -168,19 +168,19 @@ export default function DashboardSettings() {
 
 				{/* Username */}
 				<form
-					className="flex w-full flex-col items-start rounded-lg border border-border bg-card"
+					className="flex w-full flex-col items-start border-2 border-border bg-card shadow-md"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						usernameForm.handleSubmit();
 					}}
 				>
-					<div className="flex w-full flex-col gap-4 rounded-lg p-6">
+					<div className="flex w-full flex-col gap-4 p-6">
 						<div className="flex flex-col gap-2">
-							<h2 className="text-xl font-medium text-primary">
+							<h2 className="text-xl font-bold text-foreground">
 								Your Username
 							</h2>
-							<p className="text-sm font-normal text-primary/60">
+							<p className="text-sm font-normal text-muted-foreground">
 								This is your username. It will be displayed on your profile.
 							</p>
 						</div>
@@ -197,7 +197,7 @@ export default function DashboardSettings() {
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									className={`w-80 bg-transparent ${
+									className={`w-fit text-foreground bg-transparent ${
 										field.state.meta?.errors.length > 0 &&
 										"border-destructive focus-visible:ring-destructive"
 									}`}
@@ -205,13 +205,13 @@ export default function DashboardSettings() {
 							)}
 						/>
 						{usernameForm.state.fieldMeta.username?.errors.length > 0 && (
-							<p className="text-sm text-destructive dark:text-destructive-foreground">
+							<p className="text-sm text-destructive">
 								{usernameForm.state.fieldMeta.username?.errors.join(" ")}
 							</p>
 						)}
 					</div>
-					<div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-						<p className="text-sm font-normal text-primary/60">
+					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-border bg-secondary px-6">
+						<p className="text-sm font-normal text-secondary-foreground">
 							Please use 32 characters at maximum.
 						</p>
 						<Button type="submit" size="sm">
@@ -221,20 +221,22 @@ export default function DashboardSettings() {
 				</form>
 
 				{/* Delete Account */}
-				<div className="flex w-full flex-col items-start rounded-lg border border-destructive bg-card">
+				<div className="flex w-full flex-col items-start border-2 border-destructive bg-card shadow-md">
 					<div className="flex flex-col gap-2 p-6">
-						<h2 className="text-xl font-medium text-primary">Delete Account</h2>
-						<p className="text-sm font-normal text-primary/60">
+						<h2 className="text-xl font-bold text-foreground">
+							Delete Account
+						</h2>
+						<p className="text-sm font-normal text-muted-foreground">
 							Permanently delete your account.
 						</p>
 					</div>
-					<div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-red-500/10 px-6 dark:bg-red-500/10">
-						<p className="text-sm font-normal text-primary/60">
+					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-destructive bg-destructive/10 px-6">
+						<p className="text-sm font-normal text-muted-foreground">
 							This action cannot be undone, proceed with caution.
 						</p>
 						<Button
 							size="sm"
-							variant="destructive"
+							className="bg-destructive text-white hover:bg-destructive/90"
 							{...getButtonProps({
 								onClick: doubleCheck ? handleDeleteAccount : undefined,
 							})}

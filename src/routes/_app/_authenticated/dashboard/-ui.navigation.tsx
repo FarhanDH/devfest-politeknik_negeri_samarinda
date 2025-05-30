@@ -32,6 +32,30 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 					<Link to={"/"} className="flex h-10 items-center gap-1">
 						<Logo />
 					</Link>
+
+					<div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
+						<Link to={"/dashboard"}>
+							<Button
+								variant={"link"}
+								className={cn(" text-sm text-foreground", {
+									"text-primary underline": isDashboardPath,
+								})}
+							>
+								Dashboard
+							</Button>
+						</Link>
+
+						<Link to={"/dashboard/settings"}>
+							<Button
+								variant={"link"}
+								className={cn(" text-sm text-foreground", {
+									"text-primary underline": isSettingsPath,
+								})}
+							>
+								Settings
+							</Button>
+						</Link>
+					</div>
 				</div>
 
 				<div className="flex h-10 items-center gap-3">
@@ -92,7 +116,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 				</div>
 			</div>
 
-			<div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
+			{/* <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
 				<div
 					className={cn(
 						"flex h-12 items-center border-b-2",
@@ -127,7 +151,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 						</Button>
 					</Link>
 				</div>
-			</div>
+			</div> */}
 		</nav>
 	);
 }

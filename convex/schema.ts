@@ -1,3 +1,4 @@
+import { typedV } from "convex-helpers/validators";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -5,7 +6,7 @@ import { v } from "convex/values";
  * Defines the database schema for the application.
  * This includes definitions for 'tasks' and 'users' tables.
  */
-export default defineSchema({
+const schema = defineSchema({
 	// users schema
 	users: defineTable({
 		username: v.string(),
@@ -81,3 +82,7 @@ export default defineSchema({
 		.index("by_user", ["userId"])
 		.index("by_user_quiz", ["userId", "quizId"]),
 });
+
+export default schema;
+
+export const vv = typedV(schema);
