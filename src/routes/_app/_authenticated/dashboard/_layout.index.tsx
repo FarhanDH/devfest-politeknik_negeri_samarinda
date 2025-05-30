@@ -18,6 +18,7 @@ function RouteComponent() {
 			<HeaderConfiguration
 				headerDescription="Manage your Apps and view your usage."
 				headerTitle="Dashboard"
+				isVisible={false}
 			/>
 		</>
 	);

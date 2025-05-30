@@ -4,6 +4,7 @@ export type HeaderProviderState = {
 	headerConfig?: {
 		headerTitle?: string;
 		headerDescription?: string;
+		isVisible?: boolean;
 	};
 	setHeaderConfig?: (config: HeaderProviderState["headerConfig"]) => void;
 };
@@ -42,10 +43,12 @@ export const useHeader = () => {
 type HeaderConfigurationProps = {
 	headerTitle?: string;
 	headerDescription?: string;
+	isVisible?: boolean;
 };
-export const HeaderConfiguration: React.FC<HeaderConfigurationProps> = (
-	props,
-) => {
+export const HeaderConfiguration: React.FC<HeaderConfigurationProps> = ({
+	isVisible,
+	...props
+}) => {
 	const { headerConfig, setHeaderConfig } = useHeader();
 
 	React.useEffect(() => {
@@ -54,9 +57,10 @@ export const HeaderConfiguration: React.FC<HeaderConfigurationProps> = (
 				headerTitle: props.headerTitle || headerConfig?.headerTitle,
 				headerDescription:
 					props.headerDescription || headerConfig?.headerDescription,
+				isVisible: isVisible ?? true,
 			});
 		}
-	}, [props.headerTitle, props.headerDescription, setHeaderConfig]);
+	}, [props.headerTitle, props.headerDescription, isVisible, setHeaderConfig]);
 	// Return null to avoid rendering anything
 
 	return null;

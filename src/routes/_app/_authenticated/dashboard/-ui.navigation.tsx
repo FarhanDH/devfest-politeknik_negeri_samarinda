@@ -20,7 +20,6 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 	const navigate = useNavigate();
 	const isDashboardPath = matchRoute({ to: "/dashboard" });
 	const isSettingsPath = matchRoute({ to: "/dashboard/settings" });
-	// const isBillingPath = matchRoute({ to: BillingSettingsRoute.fullPath });
 
 	if (!user) {
 		return null;

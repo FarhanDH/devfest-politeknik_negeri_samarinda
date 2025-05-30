@@ -2,6 +2,11 @@ import { useHeader } from "../header-provider";
 
 export function Header() {
 	const { headerConfig } = useHeader();
+
+	if (!headerConfig?.isVisible) {
+		return null;
+	}
+
 	return (
 		<header className="z-10 flex w-full flex-col border-b border-border bg-card px-6">
 			<div className="mx-auto flex w-full max-w-screen-xl items-center justify-between py-12">
