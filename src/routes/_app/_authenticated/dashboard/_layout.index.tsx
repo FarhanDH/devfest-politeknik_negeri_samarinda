@@ -36,7 +36,7 @@ function RouteComponent() {
 						</div>
 
 						<h1 className="mb-10 text-center text-4xl font-semibold text-foreground sm:text-5xl">
-							What can I help you with today?
+							Ayo bikin kuis edukatif yang keren!
 						</h1>
 
 						<PromptInputArea />
