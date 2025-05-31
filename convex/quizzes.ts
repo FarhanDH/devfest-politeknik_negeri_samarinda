@@ -589,3 +589,46 @@ export const generateQuizFromContentWorkflow = workflow.define({
 		}
 	},
 });
+
+export const getQuizTasks = query({
+	args: {
+		limit: v.optional(v.number()),
+	},
+	handler: async (ctx, { limit }) => {
+		const user = await assertUserAuthenticated(ctx);
+		const tasks = await ctx.db
+			.query("quiz_tasks")
+			.order("desc")
+			.filter((q) => q.eq(q.field("userId"), user._id))
+			.take(limit || 5);
+		return tasks;
+	},
+});
+
+export const getQuizAttemptsSinglePlayer = query({
+	args: {
+		quizId: vv.id("quizzes"),
+	},
+	handler: async (ctx, { quizId }) => {
+		const user = await assertUserAuthenticated(ctx);
+		return await ctx.db
+			.query("quiz_attempts")
+			.filter((q) => q.eq(q.field("quizId"), quizId))
+			.filter((q) => q.eq(q.field("userId"), user._id))
+			.order("desc")
+			.collect();
+	},
+});
+
+export const getQuizAttemptsMultiPlayer = query({
+	args: {
+		quizId: vv.id("quizzes"),
+	},
+	handler: async (ctx, { quizId }) => {
+		return await ctx.db
+			.query("multiplayer_rooms")
+			.filter((q) => q.eq(q.field("quizId"), quizId))
+			.order("desc")
+			.collect();
+	},
+});

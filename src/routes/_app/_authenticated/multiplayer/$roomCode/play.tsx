@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { LiveVideo } from "../-live-video";
 
 export const Route = createFileRoute(
 	"/_app/_authenticated/multiplayer/$roomCode/play",
@@ -60,7 +61,7 @@ function MultiplayerQuizPlayPage() {
 
 	useEffect(() => {
 		if (room?.status === "finished") {
-			toast.info("Quiz has finished! Redirecting to results...");
+			toast.info("Kuis telah selesai! Mengarahkan ke hasil...");
 			navigate({
 				to: "/multiplayer/$roomCode/results",
 				params: { roomCode },
@@ -115,7 +116,7 @@ function MultiplayerQuizPlayPage() {
 		)
 			return;
 		if (currentPlayer?.hasAnsweredCurrentQuestion) {
-			toast.info("You have already answered this question.");
+			toast.info("Kamu sudah menjawab pertanyaan ini.");
 			return;
 		}
 		if (timeLeft === 0) {
@@ -150,7 +151,9 @@ function MultiplayerQuizPlayPage() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--background)] text-[var(--foreground)]">
 				<Loader2 className="h-16 w-16 animate-spin text-[var(--primary)] mb-4" />
-				<Text as="p" className="text-xl">Loading Quiz Arena...</Text>
+				<Text as="p" className="text-xl">
+					Loading Quiz Arena...
+				</Text>
 			</div>
 		);
 	}
@@ -159,14 +162,21 @@ function MultiplayerQuizPlayPage() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--background)] text-[var(--destructive)]">
 				<AlertTriangle className="w-16 h-16 mb-4" />
-				<Text as="h2" className="text-2xl font-bold" style={{ textShadow: '0 0 5px var(--destructive), 0 0 10px var(--destructive)' }}>Error Loading Quiz</Text>
+				<Text
+					as="h2"
+					className="text-2xl font-bold"
+					style={{
+						textShadow:
+							"0 0 5px var(--destructive), 0 0 10px var(--destructive)",
+					}}
+				>
+					Error Loading Quiz
+				</Text>
 				<Text as="p" className="text-center mb-6">
 					{playDataQuery?.error ||
 						"Could not load quiz data. Please try again."}
 				</Text>
-				<Button
-					onClick={() => navigate({ to: "/dashboard", replace: true })}
-				>
+				<Button onClick={() => navigate({ to: "/dashboard", replace: true })}>
 					<ArrowLeft className="mr-2 h-4 w-4" /> Go to Dashboard
 				</Button>
 			</div>
@@ -241,7 +251,12 @@ function MultiplayerQuizPlayPage() {
 
 	const getPlayerInitials = (name: string) => {
 		if (!name) return "P";
-		return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+		return name
+			.split(" ")
+			.map((n) => n[0])
+			.join("")
+			.toUpperCase()
+			.slice(0, 2);
 	};
 
 	// Main component rendering
@@ -250,7 +265,13 @@ function MultiplayerQuizPlayPage() {
 			{/* Quiz Card */}
 			<Card className="w-full lg:w-[600px] shadow-[var(--shadow-xl)] border-2 border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)]">
 				<Card.Header className="flex flex-col items-center">
-					<Text as="h2" className="text-2xl font-bold" style={{ textShadow: '0 0 5px var(--primary), 0 0 10px var(--primary)' }}>
+					<Text
+						as="h2"
+						className="text-2xl font-bold"
+						style={{
+							textShadow: "0 0 5px var(--primary), 0 0 10px var(--primary)",
+						}}
+					>
 						{quiz.title}
 					</Text>
 					<div className="flex items-center justify-center space-x-2 text-sm mt-2">
@@ -267,7 +288,9 @@ function MultiplayerQuizPlayPage() {
 					</div>
 				</Card.Header>
 				<Card.Content className="p-6 md:p-8">
-					<Text as="p" className="text-lg mb-4">{currentQuestion.question}</Text>
+					<Text as="p" className="text-lg mb-4">
+						{currentQuestion.question}
+					</Text>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{currentQuestion.options.map((option: string, index: number) => {
 							const isCorrectAnswer =
@@ -278,12 +301,15 @@ function MultiplayerQuizPlayPage() {
 							let buttonStyle = "";
 							if (isAnswered) {
 								if (isCorrectAnswer) {
-									buttonStyle = "bg-[var(--accent)] text-[var(--accent-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
+									buttonStyle =
+										"bg-[var(--accent)] text-[var(--accent-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
 								} else if (isSelectedAnswer) {
-									buttonStyle = "bg-[var(--destructive)] text-[var(--destructive-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
+									buttonStyle =
+										"bg-[var(--destructive)] text-[var(--destructive-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
 								}
 							} else if (isSelectedAnswer) {
-								buttonStyle = "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
+								buttonStyle =
+									"bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--border)] shadow-[var(--shadow-md)]";
 							}
 
 							return (
@@ -356,59 +382,72 @@ function MultiplayerQuizPlayPage() {
 			</Card>
 
 			{/* Scoreboard Card */}
-			<Card className="w-full lg:w-80 shadow-[var(--shadow-xl)] border-2 border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] self-center lg:self-start mt-8 lg:mt-0">
-				<Card.Header>
-					<Text as="h3" className="text-xl font-bold text-center" style={{ textShadow: '0 0 5px var(--primary), 0 0 10px var(--primary)' }}>
-						Live Scores
-					</Text>
-				</Card.Header>
-				<Card.Content className="p-4 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
-					{allPlayers.map((player, idx) => (
-						<div
-							key={player.userId}
-							className={`flex items-center p-3 rounded-md transition-all duration-300 shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-sm)] border border-[var(--border)]
+
+			<div className="flex flex-row lg:flex-col gap-4">
+				<Card className="w-full lg:w-80 shadow-[var(--shadow-xl)] border-2 border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] self-center lg:self-start mt-8 lg:mt-0">
+					<Card.Header>
+						<Text
+							as="h3"
+							className="text-xl font-bold text-center"
+							style={{
+								textShadow: "0 0 5px var(--primary), 0 0 10px var(--primary)",
+							}}
+						>
+							Live Scores
+						</Text>
+					</Card.Header>
+					<Card.Content className="p-4 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+						{allPlayers.map((player, idx) => (
+							<div
+								key={player.userId}
+								className={`flex items-center p-3 rounded-md transition-all duration-300 shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-sm)] border border-[var(--border)]
                         ${player.userId === currentPlayer.userId ? "bg-[var(--primary)]/20 border-2 border-[var(--primary)]" : "bg-[var(--background)]"}
                         ${player.hasAnsweredCurrentQuestion ? "opacity-100" : "opacity-70"}`}
-						>
-							<Text
-								as="p"
-								className={`mr-3 text-lg ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}
 							>
-								{idx + 1}.
-							</Text>
-							<Avatar className="h-10 w-10 mr-3 border border-[var(--border)]">
-								<Avatar.Image
-									src={player.profileImage || undefined}
-									alt={player.username}
-								/>
-								<Avatar.Fallback className="bg-[var(--primary)] text-[var(--primary-foreground)] text-sm">
-									{getPlayerInitials(player.username)}
-								</Avatar.Fallback>
-							</Avatar>
-							<div className="flex-grow">
 								<Text
 									as="p"
-									className={`truncate ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}
+									className={`mr-3 text-lg ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}
 								>
-									{player.username}{" "}
-									{player.isHost && (
-										<Crown className="inline h-4 w-4 ml-1 text-[var(--accent)]" />
-									)}
+									{idx + 1}.
 								</Text>
-								<Text
-									as="p"
-									className={`text-sm ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]"}`}
-								>
-									Score: {player.score}
-								</Text>
+								<Avatar className="h-10 w-10 mr-3 border border-[var(--border)]">
+									<Avatar.Image
+										src={player.profileImage || undefined}
+										alt={player.username}
+									/>
+									<Avatar.Fallback className="bg-[var(--primary)] text-[var(--primary-foreground)] text-sm">
+										{getPlayerInitials(player.username)}
+									</Avatar.Fallback>
+								</Avatar>
+								<div className="flex-grow">
+									<Text
+										as="p"
+										className={`truncate ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}
+									>
+										{player.username}{" "}
+										{player.isHost && (
+											<Crown className="inline h-4 w-4 ml-1 text-[var(--accent)]" />
+										)}
+									</Text>
+									<Text
+										as="p"
+										className={`text-sm ${player.userId === currentPlayer.userId ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]"}`}
+									>
+										Score: {player.score}
+									</Text>
+								</div>
+								{player.hasAnsweredCurrentQuestion && (
+									<CheckCircle className="h-5 w-5 text-[var(--accent)] ml-2 flex-shrink-0" />
+								)}
 							</div>
-							{player.hasAnsweredCurrentQuestion && (
-								<CheckCircle className="h-5 w-5 text-[var(--accent)] ml-2 flex-shrink-0" />
-							)}
-						</div>
-					))}
-				</Card.Content>
-			</Card>
+						))}
+					</Card.Content>
+				</Card>
+				<LiveVideo
+					onLeave={() => navigate({ to: "/dashboard", replace: true })}
+					roomCode={roomCode}
+				/>
+			</div>
 
 			<Button
 				variant="outline"

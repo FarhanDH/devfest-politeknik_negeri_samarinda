@@ -18,9 +18,14 @@ import { useQuizGenerator } from "./-ui.quiz-generator-context";
 interface QuizTaskItemProps {
 	taskId: Id<"quiz_tasks">;
 	onDismiss: (taskId: Id<"quiz_tasks">) => void;
+	isShowDismissButton?: boolean;
 }
 
-const QuizTaskItem: React.FC<QuizTaskItemProps> = ({ taskId, onDismiss }) => {
+export const QuizTaskItem: React.FC<QuizTaskItemProps> = ({
+	taskId,
+	onDismiss,
+	isShowDismissButton = true,
+}) => {
 	const task = useQuery(api.quizzes.getQuizTaskPublic, { taskId });
 
 	if (!task) {
@@ -39,18 +44,6 @@ const QuizTaskItem: React.FC<QuizTaskItemProps> = ({ taskId, onDismiss }) => {
 			</div>
 		);
 	}
-
-	// const getStatusBadgeVariant = (status: string): React.ComponentProps<typeof Badge>['variant'] => {
-	//     switch (status) {
-	//       case 'completed':
-	//         return 'success';
-	//       case 'failed':
-	//         return 'destructive';
-	//       default:
-	//         return 'secondary';
-	//     }
-	//   };
-
 	const getStatusIcon = (status: string) => {
 		switch (status) {
 			case "completed":
@@ -105,11 +98,12 @@ const QuizTaskItem: React.FC<QuizTaskItemProps> = ({ taskId, onDismiss }) => {
 						</Link>
 					</Button>
 				)}
-				{(task.status === "completed" || task.status === "failed") && (
-					<Button variant="outline" onClick={() => onDismiss(taskId)}>
-						Dismiss
-					</Button>
-				)}
+				{(task.status === "completed" || task.status === "failed") &&
+					isShowDismissButton && (
+						<Button variant="outline" onClick={() => onDismiss(taskId)}>
+							Dismiss
+						</Button>
+					)}
 			</div>
 		</div>
 	);
@@ -118,28 +112,63 @@ const QuizTaskItem: React.FC<QuizTaskItemProps> = ({ taskId, onDismiss }) => {
 export const QuizGenerationStatus: React.FC = () => {
 	const { activeTaskIds, setActiveTaskIds } = useQuizGenerator();
 
+	const tasks = useQuery(api.quizzes.getQuizTasks, { limit: 5 });
+
 	const handleDismissTask = (taskIdToDismiss: Id<"quiz_tasks">) => {
 		setActiveTaskIds((prevTaskIds) =>
 			prevTaskIds.filter((id) => id !== taskIdToDismiss),
 		);
 	};
 
-	if (!activeTaskIds || activeTaskIds.length === 0) {
-		return null; // Don't render anything if there are no active tasks
-	}
-
 	return (
-		<div className="mt-12 w-full max-w-3xl">
-			<h2 className="mb-6 text-2xl font-semibold text-center">
-				Active Quiz Generation
-			</h2>
-			{activeTaskIds.map((taskId) => (
-				<QuizTaskItem
-					key={taskId}
-					taskId={taskId}
-					onDismiss={handleDismissTask}
-				/>
-			))}
+		<div className="w-full mt-12 max-w-3xl space-y-6">
+			{!activeTaskIds || activeTaskIds.length === 0 ? null : (
+				<div className="flex flex-col gap-6">
+					<h2 className=" text-2xl font-semibold text-center">
+						Active Quiz Generation
+					</h2>
+					{activeTaskIds.map((taskId) => (
+						<QuizTaskItem
+							key={taskId}
+							taskId={taskId}
+							onDismiss={handleDismissTask}
+						/>
+					))}
+				</div>
+			)}
+			{tasks && tasks.length > 0 && (
+				<div className="flex flex-col gap-2">
+					<h2 className=" text-2xl font-semibold text-center">
+						Previous Quiz Generation
+					</h2>
+					{activeTaskIds
+						? tasks
+								.filter((task) => !activeTaskIds.includes(task._id))
+								.map((task) => (
+									<QuizTaskItem
+										key={task._id}
+										taskId={task._id}
+										onDismiss={handleDismissTask}
+										isShowDismissButton={false}
+									/>
+								))
+						: tasks.map((task) => (
+								<QuizTaskItem
+									key={task._id}
+									taskId={task._id}
+									onDismiss={handleDismissTask}
+								/>
+							))}
+
+					{tasks.length >= 5 && (
+						<div className="flex items-center justify-center mb-6">
+							<Link to="/dashboard/history" className="">
+								<Button variant="outline">Lihat Semua</Button>
+							</Link>
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 };

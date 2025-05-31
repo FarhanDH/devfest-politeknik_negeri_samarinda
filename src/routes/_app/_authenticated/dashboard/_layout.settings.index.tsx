@@ -1,6 +1,7 @@
 import { HeaderConfiguration } from "@/components/header-provider";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
+import { Select } from "@/components/retroui/Select";
 import { useDoubleCheck } from "@/components/ui/use-double-check";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
@@ -10,6 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Upload } from "lucide-react";
 import { useRef } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export const Route = createFileRoute(
@@ -38,15 +40,34 @@ export default function DashboardSettings() {
 
 	const { mutateAsync: updateUsername } = useMutation({
 		mutationFn: useConvexMutation(api.users.updateUsername),
+		onSuccess: () => {
+			toast.success("Berhasil mengubah username");
+		},
 	});
 	const { mutateAsync: updateUserImage } = useMutation({
 		mutationFn: useConvexMutation(api.users.updateUserImage),
+		onSuccess: () => {
+			toast.success("Berhasil mengubah avatar");
+		},
 	});
 	const { mutateAsync: removeUserImage } = useMutation({
 		mutationFn: useConvexMutation(api.users.removeUserImage),
+		onSuccess: () => {
+			toast.success("Berhasil menghapus avatar");
+		},
 	});
 	const { mutateAsync: deleteCurrentUserAccount } = useMutation({
 		mutationFn: useConvexMutation(api.app.deleteCurrentUserAccount),
+		onSuccess: () => {
+			toast.success("Berhasil menghapus akun");
+		},
+	});
+
+	const { mutateAsync: updateEducationLevel } = useMutation({
+		mutationFn: useConvexMutation(api.users.updateEducationLevel),
+		onSuccess: () => {
+			toast.success("Berhasil mengubah tingkat pendidikan");
+		},
 	});
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +104,16 @@ export default function DashboardSettings() {
 		},
 	});
 
+	const educationLevelForm = useForm({
+		defaultValues: {
+			educationLevel: user?.education_level || "sma",
+		},
+		onSubmit: async ({ value }) => {
+			if (!value.educationLevel) return;
+			await updateEducationLevel({ educationLevel: value.educationLevel });
+		},
+	});
+
 	const handleDeleteAccount = async () => {
 		await Promise.all([removeUserImage({}), deleteCurrentUserAccount({})]);
 		await signOut({
@@ -105,9 +136,9 @@ export default function DashboardSettings() {
 				<div className="flex w-full flex-col items-start border-2 border-border bg-card shadow-md">
 					<div className="flex w-full items-start justify-between p-6">
 						<div className="flex flex-col gap-2">
-							<h2 className="text-xl font-bold text-foreground">Your Avatar</h2>
+							<h2 className="text-xl font-bold text-foreground">Avatarmu</h2>
 							<p className="text-sm font-normal text-muted-foreground">
-								This is your avatar. It will be displayed on your profile.
+								Ini adalah avatarmu. Ia akan ditampilkan di profilmu.
 							</p>
 						</div>
 						<label
@@ -149,7 +180,7 @@ export default function DashboardSettings() {
 					</div>
 					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-border bg-secondary px-6">
 						<p className="text-sm font-normal text-secondary-foreground">
-							Click on the avatar to upload a custom one from your files.
+							Klik pada avatar untuk mengunggah avatar kustom dari filemu.
 						</p>
 						{user.profileImage && (
 							<Button
@@ -177,11 +208,9 @@ export default function DashboardSettings() {
 				>
 					<div className="flex w-full flex-col gap-4 p-6">
 						<div className="flex flex-col gap-2">
-							<h2 className="text-xl font-bold text-foreground">
-								Your Username
-							</h2>
+							<h2 className="text-xl font-bold text-foreground">Usernamemu</h2>
 							<p className="text-sm font-normal text-muted-foreground">
-								This is your username. It will be displayed on your profile.
+								Ini adalah usernamemu. Ia akan ditampilkan di profilmu.
 							</p>
 						</div>
 						<usernameForm.Field
@@ -212,10 +241,68 @@ export default function DashboardSettings() {
 					</div>
 					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-border bg-secondary px-6">
 						<p className="text-sm font-normal text-secondary-foreground">
-							Please use 32 characters at maximum.
+							Gunakan 32 karakter atau kurang.
 						</p>
 						<Button type="submit" size="sm">
-							Save
+							Simpan
+						</Button>
+					</div>
+				</form>
+
+				<form
+					className="flex w-full flex-col items-start border-2 border-border bg-card shadow-md"
+					onSubmit={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						educationLevelForm.handleSubmit();
+					}}
+				>
+					<div className="flex w-full flex-col gap-4 p-6">
+						<div className="flex flex-col gap-2">
+							<h2 className="text-xl font-bold text-foreground">
+								Pendidikanmu
+							</h2>
+							<p className="text-sm font-normal text-muted-foreground">
+								Pilih pendidikanmu.
+							</p>
+						</div>
+						<educationLevelForm.Field
+							name="educationLevel"
+							children={(field) => (
+								<Select
+									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+									onValueChange={(value) => field.handleChange(value as any)}
+									defaultValue={field.state.value}
+								>
+									<Select.Trigger className="w-full">
+										<Select.Value placeholder="Tingkat Pendidikan" />
+									</Select.Trigger>
+									<Select.Content>
+										<Select.Group>
+											<Select.Item value="sd">SD</Select.Item>
+											<Select.Item value="smp">SMP</Select.Item>
+											<Select.Item value="sma">SMA</Select.Item>
+											<Select.Item value="kuliah">Kuliah</Select.Item>
+										</Select.Group>
+									</Select.Content>
+								</Select>
+							)}
+						/>
+						{educationLevelForm.state.fieldMeta.educationLevel?.errors.length >
+							0 && (
+							<p className="text-sm text-destructive">
+								{educationLevelForm.state.fieldMeta.educationLevel?.errors.join(
+									" ",
+								)}
+							</p>
+						)}
+					</div>
+					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-border bg-secondary px-6">
+						<p className="text-sm font-normal text-secondary-foreground">
+							Pilih tingkat pendidikanmu saat ini.
+						</p>
+						<Button type="submit" size="sm">
+							Simpan
 						</Button>
 					</div>
 				</form>
@@ -223,16 +310,14 @@ export default function DashboardSettings() {
 				{/* Delete Account */}
 				<div className="flex w-full flex-col items-start border-2 border-destructive bg-card shadow-md">
 					<div className="flex flex-col gap-2 p-6">
-						<h2 className="text-xl font-bold text-foreground">
-							Delete Account
-						</h2>
+						<h2 className="text-xl font-bold text-foreground">Hapus Akun</h2>
 						<p className="text-sm font-normal text-muted-foreground">
-							Permanently delete your account.
+							Hapus akunmu secara permanen.
 						</p>
 					</div>
 					<div className="flex min-h-14 w-full items-center justify-between border-t-2 border-destructive bg-destructive/10 px-6">
 						<p className="text-sm font-normal text-muted-foreground">
-							This action cannot be undone, proceed with caution.
+							Tindakan ini tidak dapat diurangi, jadi berhati-hati.
 						</p>
 						<Button
 							size="sm"

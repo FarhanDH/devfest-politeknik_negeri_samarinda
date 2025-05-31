@@ -25,7 +25,7 @@ const QuizSettings: React.FC = () => {
 		<div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
 			<div className="flex items-center gap-2 w-full xs:w-auto">
 				<span className="text-xs font-medium text-foreground whitespace-nowrap font-sans">
-					Difficulty:
+					Tingkat Kesulitan:
 				</span>
 				<Select
 					value={quizSettings.difficulty}
@@ -39,17 +39,17 @@ const QuizSettings: React.FC = () => {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent className="bg-background">
-						<SelectItem value="mix">Mix</SelectItem>
-						<SelectItem value="easy">Easy</SelectItem>
-						<SelectItem value="medium">Medium</SelectItem>
-						<SelectItem value="hard">Hard</SelectItem>
+						<SelectItem value="mix">Campur</SelectItem>
+						<SelectItem value="easy">Mudah</SelectItem>
+						<SelectItem value="medium">Sedang</SelectItem>
+						<SelectItem value="hard">Susah</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>
 
 			<div className="flex items-center gap-2 w-full xs:w-auto">
 				<span className="text-xs font-medium text-foreground whitespace-nowrap font-sans">
-					Questions:
+					Jumlah Soal:
 				</span>
 				<Select
 					value={quizSettings.questionCount}
@@ -119,13 +119,13 @@ const WebsiteUrlCard: React.FC = () => {
 					<Link className="h-6 w-6 text-foreground" />
 				</div>
 				<h3 className="font-head text-sm mb-3 text-center text-foreground">
-					Add Website
+					Cantumkan Website
 				</h3>
 				<div className="flex flex-col sm:flex-row gap-2">
 					<Input
 						ref={urlRef}
 						type="url"
-						placeholder="Paste URL here..."
+						placeholder="Masukan URL..."
 						className="text-sm border-2 border-border bg-background shadow-sm flex-1 font-sans"
 						disabled={isProcessing}
 						onKeyDown={(e) => {
@@ -150,7 +150,7 @@ const WebsiteUrlCard: React.FC = () => {
 						}}
 					>
 						<ArrowUp className="h-4 w-4 sm:mr-1" />
-						<span className="hidden sm:inline">Add</span>
+						<span className="hidden sm:inline">Tambah</span>
 					</Button>
 				</div>
 			</div>
@@ -230,10 +230,10 @@ export const PromptInputArea: React.FC = () => {
 					</div>
 					<div className="min-w-0 flex-1">
 						<h3 className="font-head text-sm text-primary-foreground">
-							Quiz Generator
+							Pembuat Quiz
 						</h3>
 						<p className="text-xs opacity-80 hidden sm:block font-sans text-primary-foreground">
-							Create practice questions from your content
+							Buat latihan soal quiz dari konten kamu sekarang!
 						</p>
 					</div>
 				</div>

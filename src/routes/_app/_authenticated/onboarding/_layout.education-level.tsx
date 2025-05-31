@@ -63,7 +63,7 @@ function EducationLevelComponent() {
 					Tingkat Pendidikan
 				</h3>
 				<p className="text-center text-base font-normal">
-					Silakan pilih tingkat pendidikan yang sesuai dengan Anda.
+					Silakan pilih tingkat pendidikan kamu.
 				</p>
 			</div>
 			<form
@@ -81,19 +81,6 @@ function EducationLevelComponent() {
 					<form.Field
 						name="educationLevel"
 						children={(field) => (
-							// <Input
-							// 	placeholder="Username"
-							// 	autoComplete="off"
-							// 	required
-							// 	value={field.state.value}
-							// 	onBlur={field.handleBlur}
-							// 	onChange={(e) => field.handleChange(e.target.value)}
-							// 	className={`${
-							// 		field.state.meta?.errors.length > 0 &&
-							// 		"border-destructive focus-visible:ring-destructive"
-							// 	}`}
-							// />
-
 							<Select
 								onValueChange={field.handleChange}
 								defaultValue={field.state.value}

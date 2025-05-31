@@ -30,7 +30,7 @@ function RouteComponent() {
 		return (
 			<div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-[var(--font-sans)] p-8 flex justify-center items-center">
 				<Text as="h2" className="text-2xl">
-					LOADING LEADERBOARD...
+					MEMUAT PAPAN PERINGKAT...
 				</Text>
 			</div>
 		);
@@ -40,7 +40,7 @@ function RouteComponent() {
 		return (
 			<div className="min-h-screen bg-[var(--background)] text-[var(--destructive)] font-[var(--font-sans)] p-8 flex justify-center items-center text-center">
 				<Text as="h2" className="text-2xl">
-					ERROR LOADING DATA. PLEASE TRY AGAIN.
+					GAGAL MEMUAT DATA. SILAHKAN COBA LAGI.
 				</Text>
 				{/* {errorLeaderboard && <Text as="p" className="text-sm">{errorLeaderboard.message}</Text>} */}
 				{/* {errorUser && <Text as="p" className="text-sm">{errorUser.message}</Text>} */}
@@ -52,7 +52,7 @@ function RouteComponent() {
 		return (
 			<div className="min-h-screen bg-[var(--background)] text-[var(--accent)] font-[var(--font-sans)] p-8 flex justify-center items-center">
 				<Text as="h2" className="text-2xl">
-					NO DATA AVAILABLE.
+					TIDAK ADA DATA.
 				</Text>
 			</div>
 		);
@@ -68,7 +68,7 @@ function RouteComponent() {
 							as="h1"
 							className="text-center font-[var(--font-head)] text-4xl md:text-5xl"
 						>
-							LEADERBOARD
+							PAPAN PERINGKAT
 						</Text>
 					</Card.Header>
 					<Card.Content className="space-y-3">
@@ -77,20 +77,14 @@ function RouteComponent() {
 								as="p"
 								className="text-center text-xl text-[var(--muted-foreground)] py-4"
 							>
-								The leaderboard is currently empty. Be the first!
+								Papan peringkat saat ini kosong. Jadi yang pertama!
 							</Text>
 						)}
 						{leaderboard.map((player, index) => {
 							const isCurrentUser = player._id === currentUser._id;
 							const rankColor = isCurrentUser
 								? "text-[var(--primary-foreground)]"
-								: index === 0
-									? "text-[var(--primary)]"
-									: index === 1
-										? "text-[var(--foreground)]"
-										: index === 2
-											? "text-[var(--accent)]"
-											: "text-[var(--muted-foreground)]";
+								: "text-[var(--muted-foreground)]";
 
 							return (
 								<Card
@@ -118,7 +112,9 @@ function RouteComponent() {
 									</div>
 									<Text
 										as="span"
-										className={`text-lg md:text-xl font-semibold whitespace-nowrap ${isCurrentUser ? "text-[var(--primary-foreground)]" : "text-[var(--accent)]"}`}
+										className={
+											"text-lg md:text-xl font-semibold whitespace-nowrap "
+										}
 									>
 										{player.exp} EXP
 									</Text>
@@ -132,7 +128,7 @@ function RouteComponent() {
 							as="h2"
 							className="text-center font-[var(--font-head)] text-2xl md:text-3xl mb-6"
 						>
-							YOUR STATS
+							STATISTIKMU
 						</Text>
 						<Card className="p-4 md:p-6 block border-[var(--border)]">
 							<div className="flex justify-between items-center mb-3">
@@ -140,7 +136,7 @@ function RouteComponent() {
 									as="p"
 									className="text-lg md:text-xl text-[var(--muted-foreground)]"
 								>
-									Player:
+									Pemain:
 								</Text>
 								<Text
 									as="p"
@@ -154,11 +150,11 @@ function RouteComponent() {
 									as="p"
 									className="text-lg md:text-xl text-[var(--muted-foreground)]"
 								>
-									Experience:
+									Pengalaman:
 								</Text>
 								<Text
 									as="p"
-									className="text-lg md:text-xl text-[var(--accent)] font-bold font-[var(--font-head)]"
+									className="text-lg md:text-xl text-muted-foreground font-bold "
 								>
 									{currentUser.exp} EXP
 								</Text>

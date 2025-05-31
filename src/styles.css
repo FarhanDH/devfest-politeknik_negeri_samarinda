@@ -1,9 +1,7 @@
-/* MY Retro UI CSS */
-
+/* Lemonade Soda Retro UI */
 /* styles.css */
 @import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
-
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -38,39 +36,43 @@
 }
 
 :root {
-	--background: #fff;
-	--foreground: #000;
-	--card: #fff;
-	--card-foreground: #000;
-	--primary: #ffdb33;
-	--primary-hover: #ffcc00;
-	--primary-foreground: #000;
-	--secondary: #000;
-	--secondary-foreground: #fff;
-	--muted: #aeaeae;
-	--muted-foreground: #5a5a5a;
-	--accent: #fae583;
-	--accent-foreground: #000;
-	--destructive: #e63946;
-	--destructive-foreground: #fff;
-	--border: #000;
+	--background: #fffce8;
+	--foreground: #111111;
+	--card: #fffce8;
+	--card-foreground: #111111;
+	--primary: #f9d923;
+	--primary-hover: #ffd000;
+	--primary-foreground: #111111;
+	--secondary: #2e3a59;
+	--secondary-foreground: #ffffff;
+	--muted: #fdf6c9;
+	--muted-foreground: #444444;
+	--accent: #3abefb;
+	--accent-foreground: #ffffff;
+	--destructive: #d7263d;
+	--destructive-foreground: #ffffff;
+	--border: #444444;
 }
 
 .dark {
-	--background: #000000;
+	--background: #1a1a1a;
 	--foreground: #eaeaea;
-	--card: #1e1e1e;
-	--card-foreground: #eaeaea;
-	--primary: #ffcc00;
-	--primary-hover: #ffdb33;
-	--primary-foreground: #000;
-	--secondary: #fff;
-	--secondary-foreground: #000;
-	--muted: #5a5a5a;
-	--muted-foreground: #aeaeae;
-	--accent: #ffd966;
-	--accent-foreground: #000;
-	--destructive: #e63946;
-	--destructive-foreground: #fff;
-	--border: #eee;
+	--card: #2a2a2a;
+	--card-foreground: #f5f5f5;
+	--primary: #ffd000;
+	--primary-hover: #f9d923;
+	--primary-foreground: #111111;
+	--secondary: #ffffff;
+	--secondary-foreground: #2e3a59;
+	--muted: #444444;
+	--muted-foreground: #fdf6c9;
+	--accent: #3abefb;
+	--accent-foreground: #ffffff;
+	--destructive: #ff3b3b;
+	--destructive-foreground: #ffffff;
+	--border: #cccccc;
+}
+
+body {
+	background-color: var(--background);
 }

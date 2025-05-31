@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -7,19 +8,28 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
-import type { Id } from "@cvx/_generated/dataModel";
+import type { Doc, Id } from "@cvx/_generated/dataModel";
 import { vv } from "@cvx/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-	createFileRoute,
 	Link,
+	createFileRoute,
 	notFound,
 	useNavigate,
 } from "@tanstack/react-router";
 import { validate } from "convex-helpers/validators";
-import { ChevronLeft, FileQuestion } from "lucide-react";
+import { ChevronLeft, FileQuestion, Zap } from "lucide-react";
+import Markdown from "react-markdown";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/_authenticated/quizzes/$quizId/")({
@@ -39,11 +49,22 @@ export const Route = createFileRoute("/_app/_authenticated/quizzes/$quizId/")({
 
 function RouteComponent() {
 	const { quizId } = Route.useParams();
-	// const [isTextToSpeechEnabled, setIsTextToSpeechEnabled] = useState(false); // Reverted
+
+	const { data: attempts, isLoading: isLoadingAttempts } = useQuery(
+		convexQuery(api.quizzes.getQuizAttemptsSinglePlayer, { quizId }),
+	);
+
+	const { data: multiplayerRooms, isLoading: isLoadingMultiplayerRooms } =
+		useQuery(convexQuery(api.quizzes.getQuizAttemptsMultiPlayer, { quizId }));
 
 	const { data, isLoading } = useQuery(
 		convexQuery(api.quizzes.getQuiz, { id: quizId }),
 	);
+
+	console.log({
+		attempts,
+		multiplayerRooms,
+	});
 
 	const navigate = useNavigate();
 
@@ -67,72 +88,239 @@ function RouteComponent() {
 			});
 		} catch (error) {
 			console.error(error);
-			toast.error("Failed to start quiz attempt");
+			toast.error("Sepertinya ada kesalahan");
 		}
 	};
 
 	const handleStartMultiplayerQuiz = async () => {
 		try {
-			toast.loading("Creating multiplayer room...");
+			toast.loading("Lagi buatin room... Tunggin Yaa");
 			const result = await createMultiplayerRoom({ quizId });
 			if (result?.roomCode) {
 				toast.dismiss();
-				toast.success("Multiplayer room created!");
+				toast.success("Room berhasil dibuat!");
 				navigate({
 					to: "/multiplayer/$roomCode",
 					params: { roomCode: result.roomCode },
 				});
 			} else {
 				toast.dismiss();
-				throw new Error("Failed to get room code from server.");
+				throw new Error("Gagal mendapatkan kode room dari server.");
 			}
 		} catch (error) {
 			toast.dismiss();
-			console.error("Failed to create multiplayer room:", error);
+			console.error("Gagal membuat room:", error);
 			toast.error(
 				error instanceof Error
 					? error.message
-					: "Failed to create multiplayer room. Please try again.",
+					: "Yahh gagal membuat room. Coba lagi.",
 			);
 		}
 	};
 
 	if (!data || isLoading) {
-		return <div>Loading...</div>;
+		return <div>Memuat...</div>;
 	}
 
 	if (!data) {
-		return <div>Quiz not found</div>;
+		return <div>Quiz tidak ditemukan</div>;
 	}
 	return (
-		<div className="relative min-h-screen ">
-			<Link to={"/dashboard"} className="absolute top-4 left-4">
-				<ChevronLeft />
-			</Link>
-
-			<Card className="container mx-auto max-w-4xl border p-4 ">
-				<CardHeader>
-					<CardTitle className="text-2xl font-bold">{data.title}</CardTitle>
-					<CardDescription>{data.description}</CardDescription>
-				</CardHeader>
-				<CardContent className="flex items-center gap-2">
-					<div className="flex items-center gap-2 text-xs">
-						<FileQuestion />
+		<div className="min-h-screen p-4 md:p-8 flex flex-col items-center">
+			<div className="w-full max-w-4xl">
+				<Button asChild variant="outline" className="mb-4 self-start">
+					<Link to={"/dashboard"}>
+						<ChevronLeft className="mr-2 h-4 w-4" />
+						Kembali ke Dashboard
+					</Link>
+				</Button>
+				<Card className="w-full border">
+					<CardHeader>
+						<CardTitle className="text-3xl font-bold">{data.title}</CardTitle>
+						<CardDescription className="text-lg pt-1">
+							{data.description}
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="py-4">
+						<div className="flex items-center gap-2 text-md">
+							<FileQuestion className="h-5 w-5" />
+							<p className="text-muted-foreground">
+								{data.questions.length} pertanyaan
+							</p>
+						</div>
+					</CardContent>
+					<CardFooter className="flex flex-col sm:flex-row gap-3 pt-4">
+						<Button
+							onClick={handleStartSingleQuiz}
+							className="w-full sm:w-auto flex-grow"
+						>
+							Mulai Quiz Sendiri
+						</Button>
+						<Button
+							onClick={handleStartMultiplayerQuiz}
+							disabled={isCreatingRoom}
+							className="w-full sm:w-auto flex-grow"
+						>
+							{isCreatingRoom ? "Membuat Room..." : "Main dengan Teman"}
+						</Button>
+					</CardFooter>
+				</Card>
+				{/* Single-player History Section */}
+				{isLoadingAttempts && (
+					<p className="mt-8 text-center">Memuat riwayat permainan...</p>
+				)}
+				{!isLoadingAttempts && attempts && attempts.length === 0 && (
+					<div className="mt-8 w-full text-center">
 						<p className="text-muted-foreground">
-							{data.questions.length} questions
+							Belum ada riwayat permainan untuk kuis ini.
 						</p>
 					</div>
-				</CardContent>
-				<CardFooter className="flex items-center gap-2 flex-col sm:flex-row">
-					<Button onClick={handleStartSingleQuiz}>Start Quiz</Button>
-					<Button
-						onClick={handleStartMultiplayerQuiz}
-						disabled={isCreatingRoom}
-					>
-						{isCreatingRoom ? "Creating Room..." : "Start with Friend"}
-					</Button>
-				</CardFooter>
-			</Card>
+				)}
+				{!isLoadingAttempts && attempts && attempts.length > 0 && (
+					<div className="mt-8 w-full">
+						<h2 className="text-2xl font-semibold mb-4">
+							Riwayat Permainan Sendiri
+						</h2>
+						<div className="space-y-4">
+							{attempts.map((attempt: Doc<"quiz_attempts">) => (
+								<Card key={attempt._id} className="border">
+									<CardHeader className="flex flex-row items-center justify-between pb-2 pt-2 px-4">
+										<div>
+											<p className="text-sm font-medium leading-none">Detail</p>
+										</div>
+										{attempt.feedback && (
+											<Dialog>
+												<DialogTrigger asChild>
+													<Button
+														variant="ghost"
+														size="icon"
+														disabled={!attempt.feedback}
+														aria-label="Lihat Feedback"
+													>
+														<Zap className="size-5" />
+													</Button>
+												</DialogTrigger>
+												<DialogContent className="min-w-[95vw] max-h-[95vh] sm:min-w-[80vw] md:min-w-[60vw] lg:min-w-[50vw]">
+													<DialogHeader>
+														<DialogTitle>Umpan Balik Kuis</DialogTitle>
+														<DialogDescription className="pt-2 whitespace-pre-wrap overflow-y-auto max-h-[70vh]">
+															<Markdown>{attempt.feedback}</Markdown>
+														</DialogDescription>
+													</DialogHeader>
+												</DialogContent>
+											</Dialog>
+										)}
+										{!attempt.feedback && (
+											<Button
+												variant="ghost"
+												size="icon"
+												disabled
+												aria-label="Tidak Ada Feedback"
+											>
+												<Zap className="size-5 text-muted-foreground/50" />
+											</Button>
+										)}
+									</CardHeader>
+									<CardContent className="p-4 pt-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+										<div>
+											<p className="text-sm text-muted-foreground">Tanggal:</p>
+											<p className="font-medium">
+												{new Date(attempt._creationTime).toLocaleDateString(
+													"id-ID",
+													{
+														year: "numeric",
+														month: "long",
+														day: "numeric",
+														hour: "2-digit",
+														minute: "2-digit",
+													},
+												)}
+											</p>
+										</div>
+										<div className="flex flex-col sm:flex-row gap-2 sm:items-center mt-2 sm:mt-0 self-start sm:self-center">
+											<Badge variant="outline">
+												Skor: {attempt.totalScore}
+											</Badge>
+											<Badge variant="secondary">
+												EXP: {attempt.expEarned}
+											</Badge>
+										</div>
+									</CardContent>
+								</Card>
+							))}
+						</div>
+					</div>
+				)}
+				{/* Multiplayer Room History Section */}
+				{isLoadingMultiplayerRooms && (
+					<p className="mt-8 text-center">Memuat riwayat room multiplayer...</p>
+				)}
+				{!isLoadingMultiplayerRooms &&
+					multiplayerRooms &&
+					multiplayerRooms.length === 0 && (
+						<div className="mt-8 w-full text-center">
+							<p className="text-muted-foreground">
+								Belum ada riwayat room multiplayer untuk kuis ini.
+							</p>
+						</div>
+					)}
+				{!isLoadingMultiplayerRooms &&
+					multiplayerRooms &&
+					multiplayerRooms.length > 0 && (
+						<div className="mt-8 w-full">
+							<h2 className="text-2xl font-semibold mb-4">
+								Riwayat Room Multiplayer
+							</h2>
+							<div className="space-y-4">
+								{multiplayerRooms.map((room: Doc<"multiplayer_rooms">) => (
+									<Card key={room._id} className="border">
+										<CardHeader className="pb-2">
+											<CardTitle className="text-xl">
+												Room: {room.code}
+											</CardTitle>
+											<CardDescription>
+												Tanggal:{" "}
+												{new Date(room._creationTime).toLocaleDateString(
+													"id-ID",
+													{
+														year: "numeric",
+														month: "long",
+														day: "numeric",
+														hour: "2-digit",
+														minute: "2-digit",
+													},
+												)}
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="pt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+											<Badge
+												variant={
+													room.status === "finished"
+														? "outline"
+														: room.status === "active"
+															? "default"
+															: "secondary"
+												}
+											>
+												Status:{" "}
+												{room.status === "finished"
+													? "Selesai"
+													: room.status === "active"
+														? "Sedang Main"
+														: "Menunggu"}
+											</Badge>
+											{/* Player count display removed for now due to type incompatibility. Needs schema/query adjustment. */}
+											{/* <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2 sm:mt-0">
+												<Users className="h-4 w-4" />
+												<span>Pemain: N/A</span>
+											</div> */}
+										</CardContent>
+									</Card>
+								))}
+							</div>
+						</div>
+					)}
+			</div>
 		</div>
 	);
 }
