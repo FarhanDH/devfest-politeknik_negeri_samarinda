@@ -20,7 +20,7 @@ export function ThemeSwitcher({ triggerClass }: { triggerClass?: string }) {
 		>
 			<SelectTrigger
 				className={cn(
-					"h-6 rounded border-primary/20 bg-secondary !px-2 hover:border-primary/40",
+					"h-6 rounded border-border bg-background !px-2 hover:border-primary/40",
 					triggerClass,
 				)}
 			>
@@ -37,7 +37,7 @@ export function ThemeSwitcher({ triggerClass }: { triggerClass?: string }) {
 					</span>
 				</div>
 			</SelectTrigger>
-			<SelectContent>
+			<SelectContent className="bg-background">
 				{themes.map((t) => (
 					<SelectItem
 						key={t}

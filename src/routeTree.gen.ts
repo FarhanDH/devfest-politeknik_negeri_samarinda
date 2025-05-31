@@ -16,11 +16,22 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AppAuthenticatedImport } from './routes/_app/_authenticated'
+import { Route as AppAuthenticatedQuizzesRouteImport } from './routes/_app/_authenticated/quizzes/route'
+import { Route as AppAuthenticatedQuizzesIndexImport } from './routes/_app/_authenticated/quizzes/index'
 import { Route as AppAuthenticatedOnboardingLayoutImport } from './routes/_app/_authenticated/onboarding/_layout'
 import { Route as AppAuthenticatedDashboardLayoutImport } from './routes/_app/_authenticated/dashboard/_layout'
+import { Route as AppAuthenticatedQuizzesQuizIdIndexImport } from './routes/_app/_authenticated/quizzes/$quizId/index'
+import { Route as AppAuthenticatedMultiplayerRoomCodeIndexImport } from './routes/_app/_authenticated/multiplayer/$roomCode/index'
 import { Route as AppAuthenticatedDashboardLayoutIndexImport } from './routes/_app/_authenticated/dashboard/_layout.index'
+import { Route as AppAuthenticatedQuizzesQuizIdResultImport } from './routes/_app/_authenticated/quizzes/$quizId/result'
+import { Route as AppAuthenticatedQuizzesQuizIdPlayImport } from './routes/_app/_authenticated/quizzes/$quizId/play'
 import { Route as AppAuthenticatedOnboardingLayoutUsernameImport } from './routes/_app/_authenticated/onboarding/_layout.username'
+import { Route as AppAuthenticatedOnboardingLayoutEducationLevelImport } from './routes/_app/_authenticated/onboarding/_layout.education-level'
+import { Route as AppAuthenticatedMultiplayerRoomCodeResultsImport } from './routes/_app/_authenticated/multiplayer/$roomCode/results'
+import { Route as AppAuthenticatedMultiplayerRoomCodePlayImport } from './routes/_app/_authenticated/multiplayer/$roomCode/play'
 import { Route as AppAuthenticatedDashboardLayoutSettingsImport } from './routes/_app/_authenticated/dashboard/_layout.settings'
+import { Route as AppAuthenticatedDashboardLayoutLeaderboardImport } from './routes/_app/_authenticated/dashboard/_layout.leaderboard'
+import { Route as AppAuthenticatedDashboardLayoutHistoryImport } from './routes/_app/_authenticated/dashboard/_layout.history'
 import { Route as AppAuthenticatedDashboardLayoutSettingsIndexImport } from './routes/_app/_authenticated/dashboard/_layout.settings.index'
 
 // Create Virtual Routes
@@ -64,6 +75,20 @@ const AppAuthenticatedDashboardRoute = AppAuthenticatedDashboardImport.update({
   getParentRoute: () => AppAuthenticatedRoute,
 } as any)
 
+const AppAuthenticatedQuizzesRouteRoute =
+  AppAuthenticatedQuizzesRouteImport.update({
+    id: '/quizzes',
+    path: '/quizzes',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
+
+const AppAuthenticatedQuizzesIndexRoute =
+  AppAuthenticatedQuizzesIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppAuthenticatedQuizzesRouteRoute,
+  } as any)
+
 const AppAuthenticatedOnboardingLayoutRoute =
   AppAuthenticatedOnboardingLayoutImport.update({
     id: '/_layout',
@@ -76,11 +101,39 @@ const AppAuthenticatedDashboardLayoutRoute =
     getParentRoute: () => AppAuthenticatedDashboardRoute,
   } as any)
 
+const AppAuthenticatedQuizzesQuizIdIndexRoute =
+  AppAuthenticatedQuizzesQuizIdIndexImport.update({
+    id: '/$quizId/',
+    path: '/$quizId/',
+    getParentRoute: () => AppAuthenticatedQuizzesRouteRoute,
+  } as any)
+
+const AppAuthenticatedMultiplayerRoomCodeIndexRoute =
+  AppAuthenticatedMultiplayerRoomCodeIndexImport.update({
+    id: '/multiplayer/$roomCode/',
+    path: '/multiplayer/$roomCode/',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
+
 const AppAuthenticatedDashboardLayoutIndexRoute =
   AppAuthenticatedDashboardLayoutIndexImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AppAuthenticatedDashboardLayoutRoute,
+  } as any)
+
+const AppAuthenticatedQuizzesQuizIdResultRoute =
+  AppAuthenticatedQuizzesQuizIdResultImport.update({
+    id: '/$quizId/result',
+    path: '/$quizId/result',
+    getParentRoute: () => AppAuthenticatedQuizzesRouteRoute,
+  } as any)
+
+const AppAuthenticatedQuizzesQuizIdPlayRoute =
+  AppAuthenticatedQuizzesQuizIdPlayImport.update({
+    id: '/$quizId/play',
+    path: '/$quizId/play',
+    getParentRoute: () => AppAuthenticatedQuizzesRouteRoute,
   } as any)
 
 const AppAuthenticatedOnboardingLayoutUsernameRoute =
@@ -90,10 +143,45 @@ const AppAuthenticatedOnboardingLayoutUsernameRoute =
     getParentRoute: () => AppAuthenticatedOnboardingLayoutRoute,
   } as any)
 
+const AppAuthenticatedOnboardingLayoutEducationLevelRoute =
+  AppAuthenticatedOnboardingLayoutEducationLevelImport.update({
+    id: '/education-level',
+    path: '/education-level',
+    getParentRoute: () => AppAuthenticatedOnboardingLayoutRoute,
+  } as any)
+
+const AppAuthenticatedMultiplayerRoomCodeResultsRoute =
+  AppAuthenticatedMultiplayerRoomCodeResultsImport.update({
+    id: '/multiplayer/$roomCode/results',
+    path: '/multiplayer/$roomCode/results',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
+
+const AppAuthenticatedMultiplayerRoomCodePlayRoute =
+  AppAuthenticatedMultiplayerRoomCodePlayImport.update({
+    id: '/multiplayer/$roomCode/play',
+    path: '/multiplayer/$roomCode/play',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
+
 const AppAuthenticatedDashboardLayoutSettingsRoute =
   AppAuthenticatedDashboardLayoutSettingsImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AppAuthenticatedDashboardLayoutRoute,
+  } as any)
+
+const AppAuthenticatedDashboardLayoutLeaderboardRoute =
+  AppAuthenticatedDashboardLayoutLeaderboardImport.update({
+    id: '/leaderboard',
+    path: '/leaderboard',
+    getParentRoute: () => AppAuthenticatedDashboardLayoutRoute,
+  } as any)
+
+const AppAuthenticatedDashboardLayoutHistoryRoute =
+  AppAuthenticatedDashboardLayoutHistoryImport.update({
+    id: '/history',
+    path: '/history',
     getParentRoute: () => AppAuthenticatedDashboardLayoutRoute,
   } as any)
 
@@ -129,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthenticatedImport
       parentRoute: typeof AppImport
     }
+    '/_app/_authenticated/quizzes': {
+      id: '/_app/_authenticated/quizzes'
+      path: '/quizzes'
+      fullPath: '/quizzes'
+      preLoaderRoute: typeof AppAuthenticatedQuizzesRouteImport
+      parentRoute: typeof AppAuthenticatedImport
+    }
     '/_app/_authenticated/dashboard': {
       id: '/_app/_authenticated/dashboard'
       path: '/dashboard'
@@ -157,12 +252,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthenticatedOnboardingLayoutImport
       parentRoute: typeof AppAuthenticatedOnboardingRoute
     }
+    '/_app/_authenticated/quizzes/': {
+      id: '/_app/_authenticated/quizzes/'
+      path: '/'
+      fullPath: '/quizzes/'
+      preLoaderRoute: typeof AppAuthenticatedQuizzesIndexImport
+      parentRoute: typeof AppAuthenticatedQuizzesRouteImport
+    }
+    '/_app/_authenticated/dashboard/_layout/history': {
+      id: '/_app/_authenticated/dashboard/_layout/history'
+      path: '/history'
+      fullPath: '/dashboard/history'
+      preLoaderRoute: typeof AppAuthenticatedDashboardLayoutHistoryImport
+      parentRoute: typeof AppAuthenticatedDashboardLayoutImport
+    }
+    '/_app/_authenticated/dashboard/_layout/leaderboard': {
+      id: '/_app/_authenticated/dashboard/_layout/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/dashboard/leaderboard'
+      preLoaderRoute: typeof AppAuthenticatedDashboardLayoutLeaderboardImport
+      parentRoute: typeof AppAuthenticatedDashboardLayoutImport
+    }
     '/_app/_authenticated/dashboard/_layout/settings': {
       id: '/_app/_authenticated/dashboard/_layout/settings'
       path: '/settings'
       fullPath: '/dashboard/settings'
       preLoaderRoute: typeof AppAuthenticatedDashboardLayoutSettingsImport
       parentRoute: typeof AppAuthenticatedDashboardLayoutImport
+    }
+    '/_app/_authenticated/multiplayer/$roomCode/play': {
+      id: '/_app/_authenticated/multiplayer/$roomCode/play'
+      path: '/multiplayer/$roomCode/play'
+      fullPath: '/multiplayer/$roomCode/play'
+      preLoaderRoute: typeof AppAuthenticatedMultiplayerRoomCodePlayImport
+      parentRoute: typeof AppAuthenticatedImport
+    }
+    '/_app/_authenticated/multiplayer/$roomCode/results': {
+      id: '/_app/_authenticated/multiplayer/$roomCode/results'
+      path: '/multiplayer/$roomCode/results'
+      fullPath: '/multiplayer/$roomCode/results'
+      preLoaderRoute: typeof AppAuthenticatedMultiplayerRoomCodeResultsImport
+      parentRoute: typeof AppAuthenticatedImport
+    }
+    '/_app/_authenticated/onboarding/_layout/education-level': {
+      id: '/_app/_authenticated/onboarding/_layout/education-level'
+      path: '/education-level'
+      fullPath: '/onboarding/education-level'
+      preLoaderRoute: typeof AppAuthenticatedOnboardingLayoutEducationLevelImport
+      parentRoute: typeof AppAuthenticatedOnboardingLayoutImport
     }
     '/_app/_authenticated/onboarding/_layout/username': {
       id: '/_app/_authenticated/onboarding/_layout/username'
@@ -171,12 +308,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthenticatedOnboardingLayoutUsernameImport
       parentRoute: typeof AppAuthenticatedOnboardingLayoutImport
     }
+    '/_app/_authenticated/quizzes/$quizId/play': {
+      id: '/_app/_authenticated/quizzes/$quizId/play'
+      path: '/$quizId/play'
+      fullPath: '/quizzes/$quizId/play'
+      preLoaderRoute: typeof AppAuthenticatedQuizzesQuizIdPlayImport
+      parentRoute: typeof AppAuthenticatedQuizzesRouteImport
+    }
+    '/_app/_authenticated/quizzes/$quizId/result': {
+      id: '/_app/_authenticated/quizzes/$quizId/result'
+      path: '/$quizId/result'
+      fullPath: '/quizzes/$quizId/result'
+      preLoaderRoute: typeof AppAuthenticatedQuizzesQuizIdResultImport
+      parentRoute: typeof AppAuthenticatedQuizzesRouteImport
+    }
     '/_app/_authenticated/dashboard/_layout/': {
       id: '/_app/_authenticated/dashboard/_layout/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AppAuthenticatedDashboardLayoutIndexImport
       parentRoute: typeof AppAuthenticatedDashboardLayoutImport
+    }
+    '/_app/_authenticated/multiplayer/$roomCode/': {
+      id: '/_app/_authenticated/multiplayer/$roomCode/'
+      path: '/multiplayer/$roomCode'
+      fullPath: '/multiplayer/$roomCode'
+      preLoaderRoute: typeof AppAuthenticatedMultiplayerRoomCodeIndexImport
+      parentRoute: typeof AppAuthenticatedImport
+    }
+    '/_app/_authenticated/quizzes/$quizId/': {
+      id: '/_app/_authenticated/quizzes/$quizId/'
+      path: '/$quizId'
+      fullPath: '/quizzes/$quizId'
+      preLoaderRoute: typeof AppAuthenticatedQuizzesQuizIdIndexImport
+      parentRoute: typeof AppAuthenticatedQuizzesRouteImport
     }
     '/_app/_authenticated/dashboard/_layout/settings/': {
       id: '/_app/_authenticated/dashboard/_layout/settings/'
@@ -189,6 +354,29 @@ declare module '@tanstack/react-router' {
 }
 
 // Create and export the route tree
+
+interface AppAuthenticatedQuizzesRouteRouteChildren {
+  AppAuthenticatedQuizzesIndexRoute: typeof AppAuthenticatedQuizzesIndexRoute
+  AppAuthenticatedQuizzesQuizIdPlayRoute: typeof AppAuthenticatedQuizzesQuizIdPlayRoute
+  AppAuthenticatedQuizzesQuizIdResultRoute: typeof AppAuthenticatedQuizzesQuizIdResultRoute
+  AppAuthenticatedQuizzesQuizIdIndexRoute: typeof AppAuthenticatedQuizzesQuizIdIndexRoute
+}
+
+const AppAuthenticatedQuizzesRouteRouteChildren: AppAuthenticatedQuizzesRouteRouteChildren =
+  {
+    AppAuthenticatedQuizzesIndexRoute: AppAuthenticatedQuizzesIndexRoute,
+    AppAuthenticatedQuizzesQuizIdPlayRoute:
+      AppAuthenticatedQuizzesQuizIdPlayRoute,
+    AppAuthenticatedQuizzesQuizIdResultRoute:
+      AppAuthenticatedQuizzesQuizIdResultRoute,
+    AppAuthenticatedQuizzesQuizIdIndexRoute:
+      AppAuthenticatedQuizzesQuizIdIndexRoute,
+  }
+
+const AppAuthenticatedQuizzesRouteRouteWithChildren =
+  AppAuthenticatedQuizzesRouteRoute._addFileChildren(
+    AppAuthenticatedQuizzesRouteRouteChildren,
+  )
 
 interface AppAuthenticatedDashboardLayoutSettingsRouteChildren {
   AppAuthenticatedDashboardLayoutSettingsIndexRoute: typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
@@ -206,12 +394,18 @@ const AppAuthenticatedDashboardLayoutSettingsRouteWithChildren =
   )
 
 interface AppAuthenticatedDashboardLayoutRouteChildren {
+  AppAuthenticatedDashboardLayoutHistoryRoute: typeof AppAuthenticatedDashboardLayoutHistoryRoute
+  AppAuthenticatedDashboardLayoutLeaderboardRoute: typeof AppAuthenticatedDashboardLayoutLeaderboardRoute
   AppAuthenticatedDashboardLayoutSettingsRoute: typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
   AppAuthenticatedDashboardLayoutIndexRoute: typeof AppAuthenticatedDashboardLayoutIndexRoute
 }
 
 const AppAuthenticatedDashboardLayoutRouteChildren: AppAuthenticatedDashboardLayoutRouteChildren =
   {
+    AppAuthenticatedDashboardLayoutHistoryRoute:
+      AppAuthenticatedDashboardLayoutHistoryRoute,
+    AppAuthenticatedDashboardLayoutLeaderboardRoute:
+      AppAuthenticatedDashboardLayoutLeaderboardRoute,
     AppAuthenticatedDashboardLayoutSettingsRoute:
       AppAuthenticatedDashboardLayoutSettingsRouteWithChildren,
     AppAuthenticatedDashboardLayoutIndexRoute:
@@ -239,11 +433,14 @@ const AppAuthenticatedDashboardRouteWithChildren =
   )
 
 interface AppAuthenticatedOnboardingLayoutRouteChildren {
+  AppAuthenticatedOnboardingLayoutEducationLevelRoute: typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   AppAuthenticatedOnboardingLayoutUsernameRoute: typeof AppAuthenticatedOnboardingLayoutUsernameRoute
 }
 
 const AppAuthenticatedOnboardingLayoutRouteChildren: AppAuthenticatedOnboardingLayoutRouteChildren =
   {
+    AppAuthenticatedOnboardingLayoutEducationLevelRoute:
+      AppAuthenticatedOnboardingLayoutEducationLevelRoute,
     AppAuthenticatedOnboardingLayoutUsernameRoute:
       AppAuthenticatedOnboardingLayoutUsernameRoute,
   }
@@ -269,13 +466,25 @@ const AppAuthenticatedOnboardingRouteWithChildren =
   )
 
 interface AppAuthenticatedRouteChildren {
+  AppAuthenticatedQuizzesRouteRoute: typeof AppAuthenticatedQuizzesRouteRouteWithChildren
   AppAuthenticatedDashboardRoute: typeof AppAuthenticatedDashboardRouteWithChildren
   AppAuthenticatedOnboardingRoute: typeof AppAuthenticatedOnboardingRouteWithChildren
+  AppAuthenticatedMultiplayerRoomCodePlayRoute: typeof AppAuthenticatedMultiplayerRoomCodePlayRoute
+  AppAuthenticatedMultiplayerRoomCodeResultsRoute: typeof AppAuthenticatedMultiplayerRoomCodeResultsRoute
+  AppAuthenticatedMultiplayerRoomCodeIndexRoute: typeof AppAuthenticatedMultiplayerRoomCodeIndexRoute
 }
 
 const AppAuthenticatedRouteChildren: AppAuthenticatedRouteChildren = {
+  AppAuthenticatedQuizzesRouteRoute:
+    AppAuthenticatedQuizzesRouteRouteWithChildren,
   AppAuthenticatedDashboardRoute: AppAuthenticatedDashboardRouteWithChildren,
   AppAuthenticatedOnboardingRoute: AppAuthenticatedOnboardingRouteWithChildren,
+  AppAuthenticatedMultiplayerRoomCodePlayRoute:
+    AppAuthenticatedMultiplayerRoomCodePlayRoute,
+  AppAuthenticatedMultiplayerRoomCodeResultsRoute:
+    AppAuthenticatedMultiplayerRoomCodeResultsRoute,
+  AppAuthenticatedMultiplayerRoomCodeIndexRoute:
+    AppAuthenticatedMultiplayerRoomCodeIndexRoute,
 }
 
 const AppAuthenticatedRouteWithChildren =
@@ -294,11 +503,22 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AppAuthenticatedRouteWithChildren
+  '/quizzes': typeof AppAuthenticatedQuizzesRouteRouteWithChildren
   '/dashboard': typeof AppAuthenticatedDashboardLayoutRouteWithChildren
   '/onboarding': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/quizzes/': typeof AppAuthenticatedQuizzesIndexRoute
+  '/dashboard/history': typeof AppAuthenticatedDashboardLayoutHistoryRoute
+  '/dashboard/leaderboard': typeof AppAuthenticatedDashboardLayoutLeaderboardRoute
   '/dashboard/settings': typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
+  '/multiplayer/$roomCode/play': typeof AppAuthenticatedMultiplayerRoomCodePlayRoute
+  '/multiplayer/$roomCode/results': typeof AppAuthenticatedMultiplayerRoomCodeResultsRoute
+  '/onboarding/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/onboarding/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
+  '/quizzes/$quizId/play': typeof AppAuthenticatedQuizzesQuizIdPlayRoute
+  '/quizzes/$quizId/result': typeof AppAuthenticatedQuizzesQuizIdResultRoute
   '/dashboard/': typeof AppAuthenticatedDashboardLayoutIndexRoute
+  '/multiplayer/$roomCode': typeof AppAuthenticatedMultiplayerRoomCodeIndexRoute
+  '/quizzes/$quizId': typeof AppAuthenticatedQuizzesQuizIdIndexRoute
   '/dashboard/settings/': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
 }
 
@@ -307,7 +527,17 @@ export interface FileRoutesByTo {
   '': typeof AppAuthenticatedRouteWithChildren
   '/dashboard': typeof AppAuthenticatedDashboardLayoutIndexRoute
   '/onboarding': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/quizzes': typeof AppAuthenticatedQuizzesIndexRoute
+  '/dashboard/history': typeof AppAuthenticatedDashboardLayoutHistoryRoute
+  '/dashboard/leaderboard': typeof AppAuthenticatedDashboardLayoutLeaderboardRoute
+  '/multiplayer/$roomCode/play': typeof AppAuthenticatedMultiplayerRoomCodePlayRoute
+  '/multiplayer/$roomCode/results': typeof AppAuthenticatedMultiplayerRoomCodeResultsRoute
+  '/onboarding/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/onboarding/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
+  '/quizzes/$quizId/play': typeof AppAuthenticatedQuizzesQuizIdPlayRoute
+  '/quizzes/$quizId/result': typeof AppAuthenticatedQuizzesQuizIdResultRoute
+  '/multiplayer/$roomCode': typeof AppAuthenticatedMultiplayerRoomCodeIndexRoute
+  '/quizzes/$quizId': typeof AppAuthenticatedQuizzesQuizIdIndexRoute
   '/dashboard/settings': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
 }
 
@@ -316,13 +546,24 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_app/_authenticated': typeof AppAuthenticatedRouteWithChildren
+  '/_app/_authenticated/quizzes': typeof AppAuthenticatedQuizzesRouteRouteWithChildren
   '/_app/_authenticated/dashboard': typeof AppAuthenticatedDashboardRouteWithChildren
   '/_app/_authenticated/dashboard/_layout': typeof AppAuthenticatedDashboardLayoutRouteWithChildren
   '/_app/_authenticated/onboarding': typeof AppAuthenticatedOnboardingRouteWithChildren
   '/_app/_authenticated/onboarding/_layout': typeof AppAuthenticatedOnboardingLayoutRouteWithChildren
+  '/_app/_authenticated/quizzes/': typeof AppAuthenticatedQuizzesIndexRoute
+  '/_app/_authenticated/dashboard/_layout/history': typeof AppAuthenticatedDashboardLayoutHistoryRoute
+  '/_app/_authenticated/dashboard/_layout/leaderboard': typeof AppAuthenticatedDashboardLayoutLeaderboardRoute
   '/_app/_authenticated/dashboard/_layout/settings': typeof AppAuthenticatedDashboardLayoutSettingsRouteWithChildren
+  '/_app/_authenticated/multiplayer/$roomCode/play': typeof AppAuthenticatedMultiplayerRoomCodePlayRoute
+  '/_app/_authenticated/multiplayer/$roomCode/results': typeof AppAuthenticatedMultiplayerRoomCodeResultsRoute
+  '/_app/_authenticated/onboarding/_layout/education-level': typeof AppAuthenticatedOnboardingLayoutEducationLevelRoute
   '/_app/_authenticated/onboarding/_layout/username': typeof AppAuthenticatedOnboardingLayoutUsernameRoute
+  '/_app/_authenticated/quizzes/$quizId/play': typeof AppAuthenticatedQuizzesQuizIdPlayRoute
+  '/_app/_authenticated/quizzes/$quizId/result': typeof AppAuthenticatedQuizzesQuizIdResultRoute
   '/_app/_authenticated/dashboard/_layout/': typeof AppAuthenticatedDashboardLayoutIndexRoute
+  '/_app/_authenticated/multiplayer/$roomCode/': typeof AppAuthenticatedMultiplayerRoomCodeIndexRoute
+  '/_app/_authenticated/quizzes/$quizId/': typeof AppAuthenticatedQuizzesQuizIdIndexRoute
   '/_app/_authenticated/dashboard/_layout/settings/': typeof AppAuthenticatedDashboardLayoutSettingsIndexRoute
 }
 
@@ -331,11 +572,22 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/quizzes'
     | '/dashboard'
     | '/onboarding'
+    | '/quizzes/'
+    | '/dashboard/history'
+    | '/dashboard/leaderboard'
     | '/dashboard/settings'
+    | '/multiplayer/$roomCode/play'
+    | '/multiplayer/$roomCode/results'
+    | '/onboarding/education-level'
     | '/onboarding/username'
+    | '/quizzes/$quizId/play'
+    | '/quizzes/$quizId/result'
     | '/dashboard/'
+    | '/multiplayer/$roomCode'
+    | '/quizzes/$quizId'
     | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -343,20 +595,41 @@ export interface FileRouteTypes {
     | ''
     | '/dashboard'
     | '/onboarding'
+    | '/quizzes'
+    | '/dashboard/history'
+    | '/dashboard/leaderboard'
+    | '/multiplayer/$roomCode/play'
+    | '/multiplayer/$roomCode/results'
+    | '/onboarding/education-level'
     | '/onboarding/username'
+    | '/quizzes/$quizId/play'
+    | '/quizzes/$quizId/result'
+    | '/multiplayer/$roomCode'
+    | '/quizzes/$quizId'
     | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/_app/_authenticated'
+    | '/_app/_authenticated/quizzes'
     | '/_app/_authenticated/dashboard'
     | '/_app/_authenticated/dashboard/_layout'
     | '/_app/_authenticated/onboarding'
     | '/_app/_authenticated/onboarding/_layout'
+    | '/_app/_authenticated/quizzes/'
+    | '/_app/_authenticated/dashboard/_layout/history'
+    | '/_app/_authenticated/dashboard/_layout/leaderboard'
     | '/_app/_authenticated/dashboard/_layout/settings'
+    | '/_app/_authenticated/multiplayer/$roomCode/play'
+    | '/_app/_authenticated/multiplayer/$roomCode/results'
+    | '/_app/_authenticated/onboarding/_layout/education-level'
     | '/_app/_authenticated/onboarding/_layout/username'
+    | '/_app/_authenticated/quizzes/$quizId/play'
+    | '/_app/_authenticated/quizzes/$quizId/result'
     | '/_app/_authenticated/dashboard/_layout/'
+    | '/_app/_authenticated/multiplayer/$roomCode/'
+    | '/_app/_authenticated/quizzes/$quizId/'
     | '/_app/_authenticated/dashboard/_layout/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -398,8 +671,22 @@ export const routeTree = rootRoute
       "filePath": "_app/_authenticated.tsx",
       "parent": "/_app",
       "children": [
+        "/_app/_authenticated/quizzes",
         "/_app/_authenticated/dashboard",
-        "/_app/_authenticated/onboarding"
+        "/_app/_authenticated/onboarding",
+        "/_app/_authenticated/multiplayer/$roomCode/play",
+        "/_app/_authenticated/multiplayer/$roomCode/results",
+        "/_app/_authenticated/multiplayer/$roomCode/"
+      ]
+    },
+    "/_app/_authenticated/quizzes": {
+      "filePath": "_app/_authenticated/quizzes/route.tsx",
+      "parent": "/_app/_authenticated",
+      "children": [
+        "/_app/_authenticated/quizzes/",
+        "/_app/_authenticated/quizzes/$quizId/play",
+        "/_app/_authenticated/quizzes/$quizId/result",
+        "/_app/_authenticated/quizzes/$quizId/"
       ]
     },
     "/_app/_authenticated/dashboard": {
@@ -413,6 +700,8 @@ export const routeTree = rootRoute
       "filePath": "_app/_authenticated/dashboard/_layout.tsx",
       "parent": "/_app/_authenticated/dashboard",
       "children": [
+        "/_app/_authenticated/dashboard/_layout/history",
+        "/_app/_authenticated/dashboard/_layout/leaderboard",
         "/_app/_authenticated/dashboard/_layout/settings",
         "/_app/_authenticated/dashboard/_layout/"
       ]
@@ -428,8 +717,21 @@ export const routeTree = rootRoute
       "filePath": "_app/_authenticated/onboarding/_layout.tsx",
       "parent": "/_app/_authenticated/onboarding",
       "children": [
+        "/_app/_authenticated/onboarding/_layout/education-level",
         "/_app/_authenticated/onboarding/_layout/username"
       ]
+    },
+    "/_app/_authenticated/quizzes/": {
+      "filePath": "_app/_authenticated/quizzes/index.tsx",
+      "parent": "/_app/_authenticated/quizzes"
+    },
+    "/_app/_authenticated/dashboard/_layout/history": {
+      "filePath": "_app/_authenticated/dashboard/_layout.history.tsx",
+      "parent": "/_app/_authenticated/dashboard/_layout"
+    },
+    "/_app/_authenticated/dashboard/_layout/leaderboard": {
+      "filePath": "_app/_authenticated/dashboard/_layout.leaderboard.tsx",
+      "parent": "/_app/_authenticated/dashboard/_layout"
     },
     "/_app/_authenticated/dashboard/_layout/settings": {
       "filePath": "_app/_authenticated/dashboard/_layout.settings.tsx",
@@ -438,13 +740,41 @@ export const routeTree = rootRoute
         "/_app/_authenticated/dashboard/_layout/settings/"
       ]
     },
+    "/_app/_authenticated/multiplayer/$roomCode/play": {
+      "filePath": "_app/_authenticated/multiplayer/$roomCode/play.tsx",
+      "parent": "/_app/_authenticated"
+    },
+    "/_app/_authenticated/multiplayer/$roomCode/results": {
+      "filePath": "_app/_authenticated/multiplayer/$roomCode/results.tsx",
+      "parent": "/_app/_authenticated"
+    },
+    "/_app/_authenticated/onboarding/_layout/education-level": {
+      "filePath": "_app/_authenticated/onboarding/_layout.education-level.tsx",
+      "parent": "/_app/_authenticated/onboarding/_layout"
+    },
     "/_app/_authenticated/onboarding/_layout/username": {
       "filePath": "_app/_authenticated/onboarding/_layout.username.tsx",
       "parent": "/_app/_authenticated/onboarding/_layout"
     },
+    "/_app/_authenticated/quizzes/$quizId/play": {
+      "filePath": "_app/_authenticated/quizzes/$quizId/play.tsx",
+      "parent": "/_app/_authenticated/quizzes"
+    },
+    "/_app/_authenticated/quizzes/$quizId/result": {
+      "filePath": "_app/_authenticated/quizzes/$quizId/result.tsx",
+      "parent": "/_app/_authenticated/quizzes"
+    },
     "/_app/_authenticated/dashboard/_layout/": {
       "filePath": "_app/_authenticated/dashboard/_layout.index.tsx",
       "parent": "/_app/_authenticated/dashboard/_layout"
+    },
+    "/_app/_authenticated/multiplayer/$roomCode/": {
+      "filePath": "_app/_authenticated/multiplayer/$roomCode/index.tsx",
+      "parent": "/_app/_authenticated"
+    },
+    "/_app/_authenticated/quizzes/$quizId/": {
+      "filePath": "_app/_authenticated/quizzes/$quizId/index.tsx",
+      "parent": "/_app/_authenticated/quizzes"
     },
     "/_app/_authenticated/dashboard/_layout/settings/": {
       "filePath": "_app/_authenticated/dashboard/_layout.settings.index.tsx",

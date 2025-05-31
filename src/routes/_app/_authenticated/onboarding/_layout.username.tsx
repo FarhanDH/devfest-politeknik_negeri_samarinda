@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/retroui/Button";
+import { Input } from "@/components/retroui/Input";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@cvx/_generated/api";
 import { useForm } from "@tanstack/react-form";
@@ -16,14 +16,14 @@ export const Route = createFileRoute(
 	ssr: true,
 });
 
-const onboardingSchema = z.object({
+export const usernameSchema = z.object({
 	username: z
 		.string()
-		.min(3, "Username must be at least 3 characters long")
-		.max(20, "Username must be at most 20 characters long")
+		.min(3, "Username harus minimal 3 karakter")
+		.max(20, "Username harus maksimal 20 karakter")
 		.regex(
 			/^[a-zA-Z0-9_]+$/,
-			"Username can only contain letters, numbers, and underscores",
+			"Username hanya boleh berisi huruf, angka, dan underscore",
 		),
 });
 
@@ -31,24 +31,25 @@ export default function OnboardingUsername() {
 	const navigate = useNavigate();
 	const { data: user } = useQuery(convexQuery(api.users.getCurrentUser, {}));
 
-	const { mutateAsync: completeOnboarding, isPending } = useMutation({
-		mutationFn: useConvexMutation(api.app.completeOnboarding),
-		onSuccess: () => {
-			navigate({ to: "/dashboard" });
-		},
-	});
+	const { mutateAsync: completeOnboardingUsernameStep, isPending } =
+		useMutation({
+			mutationFn: useConvexMutation(api.app.completeOnboardingUsernameStep),
+			onSuccess: () => {
+				navigate({ to: "/onboarding/education-level" });
+			},
+		});
 
 	const form = useForm({
 		defaultValues: {
 			username: "",
 		},
 		onSubmit: async ({ value }) => {
-			await completeOnboarding({
+			await completeOnboardingUsernameStep({
 				username: value.username,
 			});
 		},
 		validators: {
-			onChange: onboardingSchema,
+			onChange: usernameSchema,
 		},
 	});
 
@@ -63,10 +64,10 @@ export default function OnboardingUsername() {
 			<div className="flex flex-col items-center gap-2">
 				<span className="mb-2 select-none text-6xl">👋</span>
 				<h3 className="text-center text-2xl font-medium text-primary">
-					Welcome!
+					Selamat datang!
 				</h3>
-				<p className="text-center text-base font-normal text-primary/60">
-					Let's get started by choosing a username.
+				<p className="text-center text-base font-normal">
+					Mari kita mulai dengan memilih username.
 				</p>
 			</div>
 			<form
@@ -91,7 +92,7 @@ export default function OnboardingUsername() {
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								className={`bg-transparent ${
+								className={`${
 									field.state.meta?.errors.length > 0 &&
 									"border-destructive focus-visible:ring-destructive"
 								}`}
@@ -102,19 +103,19 @@ export default function OnboardingUsername() {
 
 				<div className="flex flex-col">
 					{form.state.fieldMeta.username?.errors.length > 0 && (
-						<span className="mb-2 text-sm text-destructive dark:text-destructive-foreground">
-							{form.state.fieldMeta.username?.errors.join(" ")}
+						<span className="mb-2 text-sm text-destructive">
+							{form.state.fieldMeta.username?.errors[0].message}
 						</span>
 					)}
 				</div>
 
-				<Button type="submit" size="sm" className="w-full">
-					{isPending ? <Loader2 className="animate-spin" /> : "Continue"}
+				<Button type="submit" size="sm" className="w-full justify-center">
+					{isPending ? <Loader2 className="animate-spin" /> : "Lanjutkan"}
 				</Button>
 			</form>
 
-			<p className="px-6 text-center text-sm font-normal leading-normal text-primary/60">
-				You can update your username at any time from your account settings.
+			<p className="px-6 text-center text-sm font-normal leading-normal text-muted-foreground">
+				Anda dapat mengupdate username kapan saja dari pengaturan akun Anda.
 			</p>
 		</div>
 	);

@@ -1,6 +1,29 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { type MutationCtx, mutation, query } from "./_generated/server";
+import {
+	type MutationCtx,
+	type QueryCtx,
+	mutation,
+	query,
+} from "./_generated/server";
+
+export const assertUserAuthenticated = async (ctx: QueryCtx | MutationCtx) => {
+	const identity = await ctx.auth.getUserIdentity();
+	if (!identity) {
+		throw new Error("User not authenticated");
+	}
+
+	const user = await ctx.db
+		.query("users")
+		.withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+		.first();
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	return user;
+};
 
 /**
  * Retrieves the currently authenticated user.
@@ -88,6 +111,8 @@ export const createOrUpdateUser = async (
 		username: args.username as string,
 		profileImage: args.profileImage || "",
 		alreadyOnboarded: args.alreadyOnboarded as boolean,
+		exp: args.exp as number,
+		education_level: args.education_level as "sd" | "smp" | "sma" | "kuliah",
 	});
 
 	return await ctx.db.get(userId);
@@ -178,5 +203,37 @@ export const updateUserImage = mutation({
 		}
 
 		await ctx.db.patch(user._id, { profileImage: args.imageUrl });
+	},
+});
+
+export const updateEducationLevel = mutation({
+	args: {
+		educationLevel: v.union(
+			v.literal("sd"),
+			v.literal("smp"),
+			v.literal("sma"),
+			v.literal("kuliah"),
+		),
+	},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			return null;
+		}
+
+		const user = await ctx.db
+			.query("users")
+			.withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+			.first();
+
+		if (!user) {
+			return null;
+		}
+
+		await ctx.db.patch(user._id, {
+			education_level: args.educationLevel,
+		});
+
+		return await ctx.db.get(user._id);
 	},
 });

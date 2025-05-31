@@ -1,6 +1,6 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/retroui/Button";
 import { Logo } from "@/components/ui/logo";
-import { SignInButton } from "@clerk/clerk-react";
+import { SignInButton, SignUp } from "@clerk/clerk-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useConvexAuth } from "convex/react";
 import { Loader2 } from "lucide-react";
@@ -12,7 +12,6 @@ export const Route = createFileRoute("/")({
 
 function Index() {
 	const { isLoading, isAuthenticated } = useConvexAuth();
-	const theme = "dark";
 	return (
 		<div className="relative flex h-full w-full flex-col bg-card">
 			{/* Navigation */}
@@ -35,17 +34,25 @@ function Index() {
 					</Unauthenticated>
 
 					<Authenticated>
-						<Link
-							to={"/dashboard"}
-							className={buttonVariants({ size: "sm" })}
-							disabled={isLoading}
-						>
-							{isLoading && <Loader2 className="animate-spin w-16 h-4" />}
-							{!isLoading && isAuthenticated && "Dashboard"}
-						</Link>
+						<Button size={"sm"} disabled={isLoading}>
+							<Link
+								to={"/dashboard"}
+								// className={buttonVariants({ size: "sm" })}
+								disabled={isLoading}
+							>
+								{isLoading && <Loader2 className="animate-spin w-16 h-4" />}
+								{!isLoading && isAuthenticated && "Dashboard"}
+							</Link>
+						</Button>
 					</Authenticated>
 				</div>
 			</div>
+
+			<Unauthenticated>
+				<div className="flex mt-40 justify-center h-screen">
+					<SignUp fallbackRedirectUrl={"/onboarding/username"} />
+				</div>
+			</Unauthenticated>
 		</div>
 	);
 }
