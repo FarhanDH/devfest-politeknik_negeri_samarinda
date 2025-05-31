@@ -34,7 +34,7 @@ export default function DashboardSettingsLayout() {
 								`text-sm w-full text-foreground ${isSettingsPath && "font-medium"}`,
 							)}
 						>
-							General
+							Umum
 						</Button>
 					</Link>
 				</div>

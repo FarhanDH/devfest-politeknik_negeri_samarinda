@@ -99,7 +99,7 @@ function RouteComponent() {
 
 			<Card className="fixed bottom-0 left-0 right-0 w-full shadow-md sm:bottom-4 sm:right-4 sm:left-auto sm:max-w-[260px] sm:rounded-md sm:shadow-none sm:hover:shadow-md h-fit">
 				<Card.Content>
-					<Text className="text-lg">Masukan code bermain dengan temanmu</Text>
+					<Text className="text-lg">Masukan kode bermain dengan temanmu</Text>
 
 					<div className="flex items-center space-x-2 mt-6">
 						{/* <Avatar className="h-10 w-10">
@@ -109,7 +109,7 @@ function RouteComponent() {
 							/>
 						</Avatar> */}
 						<Input
-							placeholder="Masukan code"
+							placeholder="Masukan kode"
 							ref={inputRoomCodeRef}
 							className="flex-grow"
 						/>
@@ -120,7 +120,7 @@ function RouteComponent() {
 							onClick={() => {
 								// if (!inputRoomCodeRef.current?.value) return;
 								if (inputRoomCodeRef.current?.value.length !== 6) {
-									return toast.error("Room code must be 6 characters long");
+									return toast.error("Kode harus 6 karakter");
 								}
 								joinRoom.mutate({ roomCode: inputRoomCodeRef.current.value });
 							}}

@@ -44,11 +44,11 @@ function RouteComponent() {
 	const { mutate: startGame, isPending: isStartingGame } = useMutation({
 		mutationFn: useConvexMutation(api.multiplayer.startRoom),
 		onSuccess: () => {
-			toast.success("Quiz started! Let the games begin!");
+			toast.success("Kuis dimulai! Mulai bermain!");
 			// Navigation to play page will be handled by useEffect watching room status
 		},
 		onError: (err) => {
-			toast.error(err instanceof Error ? err.message : "Failed to start quiz");
+			toast.error(err instanceof Error ? err.message : "Gagal memulai kuis");
 		},
 	});
 
@@ -70,15 +70,17 @@ function RouteComponent() {
 	const copyRoomCode = () => {
 		navigator.clipboard
 			.writeText(roomCode.toUpperCase())
-			.then(() => toast.success("Room code copied to clipboard!"))
-			.catch(() => toast.error("Failed to copy room code."));
+			.then(() => toast.success("Kode ruangan berhasil disalin!"))
+			.catch(() => toast.error("Gagal menyalin kode ruangan."));
 	};
 
 	if (isLoadingLobby) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-screen bg-[var(--background)]">
 				<Loader2 className="h-12 w-12 animate-spin text-[var(--primary)]" />
-				<Text as="p" className="mt-4 text-lg">Loading Room...</Text>
+				<Text as="p" className="mt-4 text-lg">
+					Memuat Ruangan...
+				</Text>
 			</div>
 		);
 	}
@@ -86,17 +88,23 @@ function RouteComponent() {
 	if (lobbyError || !lobbyData) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--background)]">
-				<Text as="h2" className="text-2xl font-semibold text-[var(--destructive)] mb-4">
-					{lobbyError ? "Error loading room" : "Room not found"}
+				<Text
+					as="h2"
+					className="text-2xl font-semibold text-[var(--destructive)] mb-4"
+				>
+					{lobbyError ? "Terjadi kesalahan saat memuat ruangan" : "Ruangan tidak ditemukan"}
 				</Text>
-				<Text as="p" className="text-[var(--muted-foreground)] mb-6 text-center">
+				<Text
+					as="p"
+					className="text-[var(--muted-foreground)] mb-6 text-center"
+				>
 					{lobbyError
 						? lobbyError.message
-						: `The room code "${roomCode.toUpperCase()}" might be invalid or the room may have expired.`}
+						: `Kode ruangan "${roomCode.toUpperCase()}" mungkin tidak valid atau ruangan sudah tidak tersedia.`}
 				</Text>
 
 				<Link to="/dashboard">
-					<Button>Go to Dashboard</Button>
+					<Button>Kembali ke Beranda</Button>
 				</Link>
 			</div>
 		);
@@ -114,15 +122,23 @@ function RouteComponent() {
 
 			<Card className="w-full shadow-[var(--shadow-xl)] border-2 border-[var(--border)] flex-grow flex flex-col bg-[var(--card)] text-[var(--card-foreground)]">
 				<Card.Header className="text-center">
-					<Text as="h1" className="text-3xl font-[var(--font-head)]" style={{ textShadow: '0 0 5px var(--primary), 0 0 10px var(--primary)' }}>
-						Multiplayer Lobby
+					<Text
+						as="h1"
+						className="text-3xl font-[var(--font-head)]"
+						style={{
+							textShadow: "0 0 5px var(--primary), 0 0 10px var(--primary)",
+						}}
+					>
+						Lobi Multiplayer
 					</Text>
 					<Text as="p" className="text-[var(--muted-foreground)]">
-						Get ready to challenge your friends!
+						Siap untuk menantang temanmu!
 					</Text>
 					<div className="mt-4">
-						<Text as="p" className="text-sm text-[var(--muted-foreground)]">ROOM CODE:</Text>
-						<Button 
+						<Text as="p" className="text-sm text-[var(--muted-foreground)]">
+							KODE RUANGAN:
+						</Text>
+						<Button
 							variant="outline"
 							className="inline-block text-2xl font-mono tracking-widest p-3 bg-[var(--secondary)] text-[var(--secondary-foreground)] border-2 border-[var(--border)] shadow-[var(--shadow-sm)]"
 							onClick={copyRoomCode}
@@ -136,19 +152,24 @@ function RouteComponent() {
 
 				<Card.Content className="flex-grow space-y-6">
 					<div className="text-center">
-						<Text as="h3" className="text-xl font-[var(--font-head)]">{lobbyData.quiz.title}</Text>
+						<Text as="h3" className="text-xl font-[var(--font-head)]">
+							{lobbyData.quiz.title}
+						</Text>
 						<Text as="p" className="text-sm text-[var(--muted-foreground)]">
 							{lobbyData.quiz.description}
 						</Text>
 						<Text as="p" className="text-sm text-[var(--muted-foreground)]">
-							{lobbyData.quiz.questionCount} Questions
+							{lobbyData.quiz.questionCount} Soal
 						</Text>
 					</div>
 
 					<div>
-						<Text as="h4" className="text-lg mb-3 flex items-center font-[var(--font-head)]">
-							<Users size={20} className="mr-2 text-[var(--primary)]" /> Participants (
-							{lobbyData.players.length})
+						<Text
+							as="h4"
+							className="text-lg mb-3 flex items-center font-[var(--font-head)]"
+						>
+							<Users size={20} className="mr-2 text-[var(--primary)]" /> Peserta
+							({lobbyData.players.length})
 						</Text>
 						<ul className="space-y-3 max-h-60 overflow-y-auto bg-[var(--muted)]/20 p-3 rounded-md border-2 border-[var(--border)] shadow-[var(--shadow-sm)]">
 							{lobbyData.players.map((player) => (
@@ -166,7 +187,9 @@ function RouteComponent() {
 												{player.username?.substring(0, 2).toUpperCase()}
 											</AvatarFallback>
 										</Avatar>
-										<Text as="span" className="font-medium">{player.username}</Text>
+										<Text as="span" className="font-medium">
+											{player.username}
+										</Text>
 									</div>
 									{player.userId === lobbyData.hostId && (
 										<div className="text-xs px-2 py-1 rounded-md bg-[var(--accent)] text-[var(--accent-foreground)] border border-[var(--border)] shadow-[var(--shadow-xs)]">
@@ -199,26 +222,31 @@ function RouteComponent() {
 							>
 								{isStartingGame ? (
 									<>
-										<Loader2 className="mr-2 h-5 w-5 animate-spin" />{" "}
-										Starting...
+										<Loader2 className="mr-2 h-5 w-5 animate-spin" /> Memulai...
 									</>
 								) : (
 									<>
-										<PlayCircle size={20} className="mr-2" /> Start Quiz
+										<PlayCircle size={20} className="mr-2" /> Mulai Quiz
 									</>
 								)}
 							</Button>
 						</div>
 					)}
 					{lobbyData.status === "active" && (
-						<Text as="p" className="text-center w-full text-[var(--accent)] font-semibold">
-							Quiz is active! Redirecting...
+						<Text
+							as="p"
+							className="text-center w-full text-[var(--accent)] font-semibold"
+						>
+							Quiz aktif! Mengarahkan...
 						</Text>
 					)}
 					{lobbyData.status === "finished" && (
 						<>
-							<Text as="p" className="text-center w-full text-[var(--primary)] font-semibold">
-								This quiz has finished.
+							<Text
+								as="p"
+								className="text-center w-full text-[var(--primary)] font-semibold"
+							>
+								Quiz selesai.
 							</Text>
 							{/* TODO: Add button to view results */}
 						</>

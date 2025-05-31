@@ -152,6 +152,7 @@ const schema = defineSchema({
 		userId: v.id("users"),
 		isHost: v.boolean(),
 		joinedAt: v.number(),
+		peerId: v.optional(v.string()),
 		score: v.number(),
 		questionAnswers: v.array(
 			v.object({

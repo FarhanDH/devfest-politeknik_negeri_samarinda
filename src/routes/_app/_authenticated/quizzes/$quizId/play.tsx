@@ -114,10 +114,10 @@ function QuizContent() {
 			<div className="min-h-screen container mx-auto max-w-4xl py-8">
 				<Card>
 					<CardHeader>
-						<CardTitle>Loading Quiz...</CardTitle>
+						<CardTitle>Sedang memuat Quiz... Tungguin yaa</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p>Please wait while we load your quiz.</p>
+						<p>Tunggu sebentar ya, sedang memuat quizmu.</p>
 					</CardContent>
 				</Card>
 			</div>
@@ -149,17 +149,17 @@ function QuizContent() {
 			<div className="min-h-screen container mx-auto max-w-4xl py-8">
 				<Card>
 					<CardHeader>
-						<CardTitle>Quiz Not Found</CardTitle>
+						<CardTitle>Quiz Tidak Ditemukan</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p>We couldn't find this quiz. Please try again later.</p>
+						<p>Kita tidak bisa menemukan quiz ini. Coba lagi nanti.</p>
 						<p className="text-sm text-gray-500 mt-2">
 							Debug info: Quiz ID: {quizId}, Attempt ID:{" "}
 							{attemptId?.toString() || "none"}, Has Quiz Data:{" "}
 							{fetchedQuizData ? "yes" : "no"}
 						</p>
 						<Button className="mt-4" onClick={() => window.history.back()}>
-							Go Back
+							Kembali
 						</Button>
 					</CardContent>
 				</Card>

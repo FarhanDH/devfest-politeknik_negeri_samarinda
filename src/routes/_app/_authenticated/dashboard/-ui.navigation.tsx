@@ -21,6 +21,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 	const isDashboardPath = matchRoute({ to: "/dashboard" });
 	const isSettingsPath = matchRoute({ to: "/dashboard/settings" });
 	const isLeaderboardPath = matchRoute({ to: "/dashboard/leaderboard" });
+	const isHistoryPath = matchRoute({ to: "/dashboard/history" });
 
 	if (!user) {
 		return null;
@@ -42,7 +43,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 									underline: isDashboardPath,
 								})}
 							>
-								<Text as={"p"}>Dashboard</Text>
+								<Text as={"p"}>Beranda</Text>
 							</Button>
 						</Link>
 
@@ -53,7 +54,18 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 									underline: isLeaderboardPath,
 								})}
 							>
-								<Text as={"p"}>Leaderboard</Text>
+								<Text as={"p"}>Peringkat</Text>
+							</Button>
+						</Link>
+
+						<Link to={"/dashboard/history"}>
+							<Button
+								variant={"link"}
+								className={cn(" text-sm text-foreground", {
+									underline: isHistoryPath,
+								})}
+							>
+								<Text as={"p"}>Histori</Text>
 							</Button>
 						</Link>
 
@@ -64,7 +76,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 									underline: isSettingsPath,
 								})}
 							>
-								<Text as={"p"}>Settings</Text>
+								<Text as={"p"}>Pengaturan</Text>
 							</Button>
 						</Link>
 					</div>
@@ -81,7 +93,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 									className="text-foreground hover:bg-accent/20 p-2 rounded-md"
 								>
 									<Menu className="h-6 w-6" />
-									<span className="sr-only">Open menu</span>
+									<span className="sr-only">Menu</span>
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
@@ -99,7 +111,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 												: "text-foreground",
 										)}
 									>
-										Dashboard
+										Beranda
 									</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem asChild>
@@ -112,7 +124,20 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 												: "text-foreground",
 										)}
 									>
-										Leaderboard
+										Peringkat
+									</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem asChild>
+									<Link
+										to="/dashboard/history"
+										className={cn(
+											"w-full flex justify-start items-center px-2 py-1.5 text-sm",
+											isHistoryPath
+												? "text-primary font-semibold"
+												: "text-foreground",
+										)}
+									>
+										Histori
 									</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem asChild>
@@ -125,7 +150,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 												: "text-foreground",
 										)}
 									>
-										Settings
+										Pengaturan
 									</Link>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -167,7 +192,7 @@ export function Navigation({ user }: { user: Doc<"users"> }) {
 								className="h-9 w-full cursor-pointer justify-between rounded-md px-2"
 								onClick={() => navigate({ to: "/dashboard/settings" })}
 							>
-								<span className="text-sm text-foreground">Settings</span>
+								<span className="text-sm text-foreground">Pengaturan</span>
 								<Settings className="h-[18px] w-[18px] stroke-[1.5px] text-muted-foreground" />
 							</DropdownMenuItem>
 

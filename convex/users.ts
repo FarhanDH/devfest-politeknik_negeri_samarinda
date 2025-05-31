@@ -205,3 +205,35 @@ export const updateUserImage = mutation({
 		await ctx.db.patch(user._id, { profileImage: args.imageUrl });
 	},
 });
+
+export const updateEducationLevel = mutation({
+	args: {
+		educationLevel: v.union(
+			v.literal("sd"),
+			v.literal("smp"),
+			v.literal("sma"),
+			v.literal("kuliah"),
+		),
+	},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			return null;
+		}
+
+		const user = await ctx.db
+			.query("users")
+			.withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+			.first();
+
+		if (!user) {
+			return null;
+		}
+
+		await ctx.db.patch(user._id, {
+			education_level: args.educationLevel,
+		});
+
+		return await ctx.db.get(user._id);
+	},
+});

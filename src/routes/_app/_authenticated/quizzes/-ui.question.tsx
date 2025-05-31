@@ -82,7 +82,7 @@ export const Question: React.FC<QuestionProps> = ({
 			>
 				<CardHeader>
 					<CardTitle className="flex justify-between">
-						<span>Question {questionNumber + 1}</span>
+						<span>Pertanyaan {questionNumber + 1}</span>
 						{isAnswered && (
 							<span className={isCorrect ? "text-green-500" : "text-red-500"}>
 								{isCorrect ? (
@@ -124,7 +124,7 @@ export const Question: React.FC<QuestionProps> = ({
 
 					{showExplanation && (
 						<Alert className={isCorrect ? "bg-green-50" : "bg-red-50"}>
-							<AlertTitle>{isCorrect ? "Correct!" : "Incorrect!"}</AlertTitle>
+							<AlertTitle>{isCorrect ? "Benar!" : "Salah!"}</AlertTitle>
 							<AlertDescription>{data.explanation}</AlertDescription>
 						</Alert>
 					)}
@@ -135,13 +135,13 @@ export const Question: React.FC<QuestionProps> = ({
 								onClick={handleSubmit}
 								disabled={selectedOption === null || isSubmitting}
 							>
-								Submit Answer
+								Kirim Jawaban
 							</Button>
 						)}
 
 						{isAnswered && isActive && (
 							<Button onClick={onNextQuestion}>
-								{isLastQuestion ? "Finish Quiz" : "Next Question"}
+								{isLastQuestion ? "Selesai" : "Pertanyaan Berikutnya"}
 							</Button>
 						)}
 					</div>

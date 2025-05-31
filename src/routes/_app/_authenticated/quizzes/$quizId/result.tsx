@@ -98,11 +98,11 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 			<div className="container mx-auto max-w-4xl py-8">
 				<Card>
 					<CardHeader>
-						<CardTitle>Loading Results...</CardTitle>
+						<CardTitle>Sedang memuat hasil...</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p>Please wait while we load your quiz results.</p>
-						{isGeneratingFeedback && <p>Generating feedback...</p>}
+						<p>Tunggu sebentar ya, sedang memuat hasil quizmu.</p>
+						{isGeneratingFeedback && <p>Sedang membuat evaluasi...</p>}
 					</CardContent>
 				</Card>
 			</div>
@@ -124,10 +124,10 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 			<div className="container mx-auto max-w-4xl py-8">
 				<Card>
 					<CardHeader>
-						<CardTitle>Results Not Found</CardTitle>
+						<CardTitle>Hasil Tidak Ditemukan</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p>We couldn't find the results for this quiz attempt.</p>
+						<p>Kita tidak bisa menemukan hasil quiz ini. Coba lagi nanti.</p>
 						<p className="text-sm text-gray-500 mt-2">
 							Debug info: Quiz ID: {quizId.toString()}, Attempt ID:{" "}
 							{attemptId.toString()}
@@ -155,16 +155,16 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 			<Button
 				variant="outline"
 				className="mb-4 flex items-center gap-2"
-				onClick={() => navigate({ to: "/quizzes" })}
+				onClick={() => navigate({ to: "/dashboard" })}
 			>
 				<ArrowLeft size={16} />
-				Back to Quizzes
+				Kembali ke Dashboard
 			</Button>
 
 			<Card className="mb-8">
 				<CardHeader>
 					<CardTitle className="text-2xl">{quiz.title}</CardTitle>
-					<CardDescription>Quiz Results</CardDescription>
+					<CardDescription>Hasil Quiz</CardDescription>
 				</CardHeader>
 
 				<CardContent className="space-y-6">
@@ -172,7 +172,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 					<div className="text-center">
 						<h2 className="text-4xl font-bold mb-2">{percentage}%</h2>
 						<p className="text-muted-foreground">
-							{correctAnswers} of {totalQuestions} questions correct
+							Benar {correctAnswers} dari {totalQuestions} total pertanyaan
 						</p>
 						<Progress className="h-2 mt-4" value={percentage} />
 					</div>
@@ -183,9 +183,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 							<CardContent className="p-6 flex flex-col items-center">
 								<Award className="w-8 h-8 mb-2 text-primary" />
 								<p className="text-lg font-semibold">{attempt.expEarned} XP</p>
-								<p className="text-sm text-muted-foreground">
-									Experience Earned
-								</p>
+								<p className="text-sm text-muted-foreground">XP Diperoleh</p>
 							</CardContent>
 						</Card>
 
@@ -195,7 +193,9 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 								<p className="text-lg font-semibold">
 									{formatTime(totalTimeTaken)}
 								</p>
-								<p className="text-sm text-muted-foreground">Time Taken</p>
+								<p className="text-sm text-muted-foreground">
+									Waktu Pengerjaan
+								</p>
 							</CardContent>
 						</Card>
 
@@ -223,7 +223,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 							})
 						}
 					>
-						Return to Quiz
+						Kembali ke Quiz
 					</Button>
 				</CardFooter>
 			</Card>
@@ -236,7 +236,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p>Sedang mengevaluasi hasil pekerjaanmu...</p>
+						<p>Sedang mengevaluasi hasil quizmu...</p>
 					</CardContent>
 				</Card>
 			)}
@@ -275,7 +275,7 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 										{formatTime(answer?.timeTaken as number)}
 									</span>
 									<CardTitle className="text-lg">
-										Question {index + 1}
+										Pertanyaan nomor {index + 1}
 									</CardTitle>
 									{isCorrect ? (
 										<Check className="text-green-500" />
@@ -311,16 +311,16 @@ function QuizResult({ quizId, attemptId }: QuizResultProps) {
 												{option}
 												{optionIndex === selectedIndex &&
 													!isCorrect &&
-													" (Your Answer)"}
+													" (Jawabanmu)"}
 												{optionIndex === question.correctOptionIndex &&
-													" (Correct Answer)"}
+													" (Jawaban Benar)"}
 											</div>
 										);
 									})}
 								</div>
 
 								<div className="mt-4 p-4 bg-muted/30 rounded-md">
-									<p className="font-medium mb-1">Explanation:</p>
+									<p className="font-medium mb-1">Penjelasan:</p>
 									<p className="text-muted-foreground">
 										{question.explanation}
 									</p>
