@@ -1,10 +1,9 @@
 import { Button } from "@/components/retroui/Button";
 import { Logo } from "@/components/ui/logo";
 import { SignInButton, SignUp } from "@clerk/clerk-react";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useConvexAuth } from "convex/react";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
 	component: Index,
@@ -13,14 +12,6 @@ export const Route = createFileRoute("/")({
 
 function Index() {
 	const { isLoading, isAuthenticated } = useConvexAuth();
-	const navigate = useNavigate();
-
-	useEffect(() => {
-		if (isLoading) return;
-		if (isAuthenticated) {
-			navigate({ to: "/dashboard" });
-		}
-	}, [isLoading, isAuthenticated]);
 	return (
 		<div className="relative flex h-full w-full flex-col bg-card">
 			{/* Navigation */}
@@ -59,7 +50,7 @@ function Index() {
 
 			<Unauthenticated>
 				<div className="flex mt-40 justify-center h-screen">
-					<SignUp />
+					<SignUp fallbackRedirectUrl={"/onboarding/username"} />
 				</div>
 			</Unauthenticated>
 		</div>
