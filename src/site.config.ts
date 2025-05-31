@@ -2,10 +2,10 @@
  * Centralized site configuration, add whatever you need here.
  */
 export default {
-	siteTitle: "Starter Convex Stack",
+	siteTitle: "Ngerti.in",
 	siteDescription:
-		"A Lightweight, Production-Ready Convex Stack for your next SaaS Application.",
-	siteUrl: "https://convex.dev",
+		"Ngerti.in adalah platform edukasi yang menyediakan kuis interaktif untuk memahami materi dengan lebih mudah.",
+	siteUrl: "https://ngerti.in",
 	siteImage: "/images/og-image.png",
 	favicon: "/favicon.ico",
 	twitterHandle: "",
