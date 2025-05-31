@@ -11,15 +11,15 @@
 - [x] 🔍 **Kuis Interaktif** berdasarkan topik atau konteks (seperti file .pdf, url website, dan prompt manual) yang user masukkan sendiri.
 - [x] 🧠 **Penjelasan Langsung** setelah setiap soal agar user **ngerti** jawaban soal tersebut
 - [x] 🔉 Integrasi **speaker** untuk pengalaman belajar berbasis suara.
-- [ ] 📊 **Feedback Akhir** yang membantu pengguna evaluasi pemahaman.
+- [X] 📊 **Feedback Akhir** yang membantu pengguna evaluasi pemahaman.
 
 ---
 
 ## 🧪 Fitur Pendukung
 
-- [ ] 🤝 **Multiplayer** untuk membuat pengalaman belajar jadi lebih seru bersama dengan teman.
-- [ ] 📷 Pemanfaatan **kamera** untuk deteksi ekspresi wajah saat belajar.
-- [ ] 🏆 **Leaderboard** sebagai ranking untuk memotivasi pengguna bersaing secara sehat.
+- [X] 🤝 **Multiplayer** untuk membuat pengalaman belajar jadi lebih seru bersama dengan teman.
+- [X] 📷 Pemanfaatan **kamera** untuk deteksi ekspresi wajah saat belajar.
+- [X] 🏆 **Leaderboard** sebagai ranking untuk memotivasi pengguna bersaing secara sehat.
 
 ---
 
